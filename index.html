@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoRegister</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- STILI BASE --- */
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-color: #6366f1;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --gold: #fbbf24;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 40%);
+            color: var(--text-main);
+            margin: 0; padding: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #app-screen, #detail-screen { display: none; width: 100%; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; animation: fadeIn 0.5s ease; }
+        #login-screen { width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; z-index: 100; background: var(--bg-color); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- SETUP MODAL --- */
+        #setup-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .setup-box {
+            background: #1e293b; border: 1px solid var(--accent-color); padding: 30px;
+            border-radius: 20px; width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .container { width: 100%; max-width: 1200px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); margin-bottom: 20px; transition: transform 0.2s ease;
+        }
+
+        input, select { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; outline: none; transition: 0.3s; font-family: 'Outfit', sans-serif;}
+        input:focus, select:focus { border-color: var(--accent-color); box-shadow: 0 0 10px rgba(99, 102, 241, 0.2); }
+        option { background: #1e293b; color: white; }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: linear-gradient(45deg, var(--accent-color), #ec4899); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4); }
+        .btn-outline { background: transparent; border: 1px solid var(--accent-color); margin-right: 10px; }
+
+        /* Social & Divider */
+        .btn-social {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: white; color: #333; border: none; padding: 12px; border-radius: 8px;
+            cursor: pointer; transition: 0.3s; font-weight: bold; margin-bottom: 15px;
+        }
+        .btn-social:hover { background: #f1f5f9; transform: translateY(-2px); }
+        
+        .divider { display: flex; align-items: center; text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 20px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--glass-border); }
+        .divider span { padding: 0 10px; }
+
+        .auth-switch { margin-top: 15px; color: var(--text-muted); font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
+        
+        /* Campo Nome Nascosto */
+        #register-name-field { overflow: hidden; transition: max-height 0.4s ease-in-out; max-height: 0; }
+        .show-name-field { max-height: 60px !important; margin-bottom: 10px; }
+
+        .dropdown { position: relative; display: inline-block; }
+        .menu-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 50px; background: #1e293b; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--glass-border); z-index: 10; overflow: hidden; }
+        .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: block; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .dropdown-content a:hover { background-color: rgba(255,255,255,0.05); }
+        .dropdown-danger:hover { background-color: rgba(239, 68, 68, 0.2) !important; color: var(--danger) !important; }
+        .show { display: block; }
+
+        .subject-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-color); margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .subject-card:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); }
+        
+        .grade-item-detailed { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; border: 1px solid transparent; }
+        .grade-val { font-size: 1.2rem; font-weight: bold; width: 50px; text-align: center; }
+        .grade-good { color: var(--success); } .grade-bad { color: var(--danger); }
+        .grade-weight { font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+        .delete-single-btn { margin-left: auto; color: #64748b; cursor: pointer; padding: 5px; }
+        .delete-single-btn:hover { color: var(--danger); }
+
+        .strategy-box { background: rgba(0,0,0,0.2); border: 1px solid; padding: 20px; border-radius: 12px; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .strategy-safe { border-color: var(--success); color: #86efac; background: rgba(16, 185, 129, 0.1); }
+        .strategy-danger { border-color: var(--danger); color: #fca5a5; background: rgba(239, 68, 68, 0.1); }
+        
+        .path-steps { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .path-step { background: var(--bg-color); border: 1px solid var(--accent-color); padding: 8px 15px; border-radius: 20px; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px; }
+
+        .strategy-divider { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); font-size: 0.8rem; letter-spacing: 1px; }
+        .strategy-divider::before, .strategy-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--glass-border); }
+        .strategy-divider span { padding: 0 10px; }
+
+        .oneshot-card { background: linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1)); border: 1px solid rgba(251, 191, 36, 0.3); padding: 15px; border-radius: 10px; text-align: center; color: var(--gold); }
+        .oneshot-val { font-size: 2rem; font-weight: bold; margin: 5px 0; }
+        .safety-card { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 15px; border-radius: 10px; text-align: center; color: var(--success); margin-top: 10px; }
+        .safety-val { font-size: 2rem; font-weight: bold; margin: 5px 0; }
+
+        .coach-card { background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid var(--accent-color); position: relative; overflow: hidden; min-height: 100px; }
+        .coach-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .coach-icon { font-size: 1.5rem; color: #38bdf8; animation: pulse 2s infinite; }
+        .coach-text { font-size: 0.95rem; line-height: 1.5; color: #e2e8f0; font-style: italic; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .chart-container { position: relative; height: 350px; width: 100%; }
+        #loader { display: none; margin-top: 10px; color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="card" style="width: 350px; text-align: center;">
+            <h1>NeoRegister <i class="fa-solid fa-graduation-cap"></i></h1>
+            <p id="auth-title" style="color: var(--text-muted); margin-bottom: 20px;">Accedi al tuo account</p>
+            
+            <button class="btn-social" onclick="loginWithGoogle()">
+                <i class="fa-brands fa-google" style="color:#DB4437; font-size:1.2rem;"></i> Accedi con Google
+            </button>
+
+            <div class="divider"><span>OPPURE CON EMAIL</span></div>
+
+            <div id="register-name-field">
+                <input type="text" id="name-input" placeholder="Il tuo Nome (es. Giulia)" style="border-color: var(--accent-color);">
+            </div>
+
+            <input type="email" id="email-input" placeholder="Email">
+            <input type="password" id="password-input" placeholder="Password">
+            
+            <button id="auth-btn" class="btn btn-primary" onclick="handleAuth()">Accedi</button>
+            <div class="auth-switch" onclick="toggleAuthMode()">Non hai un account? Registrati</div>
+            <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i> Attendi...</div>
+            <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="setup-modal">
+        <div class="card setup-box">
+            <h2>👋 Benvenuto!</h2>
+            <p style="color:var(--text-muted)">Per parlarti come si deve, ho bisogno di sapere come preferisci che mi rivolga a te.</p>
+            <select id="setup-pronoun" style="margin-top:20px; border-color:var(--accent-color);">
+                <option value="m" selected>Maschile (Bravo, Sei stato...)</option>
+                <option value="f">Femminile (Brava, Sei stata...)</option>
+                <option value="n">Neutro (Grande, Ottimo lavoro...)</option>
+            </select>
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="saveSetup()">Iniziamo!</button>
+        </div>
+    </div>
+
+    <div id="app-screen">
+        <header style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+                <h1>Ciao, <span id="display-name" style="color:var(--accent-color)">Studente</span></h1>
+                <p style="color: var(--text-muted)">I tuoi obiettivi sono a portata di mano</p>
+            </div>
+            <div class="dropdown">
+                <button onclick="toggleMenu()" class="menu-btn"><i class="fa-solid fa-user-gear"></i> Account <i class="fa-solid fa-caret-down"></i></button>
+                <div id="myDropdown" class="dropdown-content">
+                    <a onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Esci</a>
+                    <a onclick="deleteMyAccount()" class="dropdown-danger"><i class="fa-solid fa-trash-can"></i> Elimina Account</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <main>
+                <div class="card stats-grid">
+                    <div><div class="stat-value" id="global-average">0.0</div><small>Media Globale</small></div>
+                    <div><div class="stat-value" id="count-subjects">0</div><small>Materie</small></div>
+                    <div><div class="stat-value" id="count-grades">0</div><small>Voti Totali</small></div>
+                </div>
+                <div class="card"><div class="chart-container"><canvas id="gradeChart"></canvas></div></div>
+                <div id="subjects-container"></div>
+            </main>
+
+            <aside>
+                <div class="card coach-card">
+                    <div class="coach-header">
+                        <i class="fa-solid fa-brain coach-icon"></i><h3 style="margin:0; font-size:1.1rem; color:#38bdf8;">Mental Coach</h3>
+                    </div>
+                    <div id="coach-message" class="coach-text">Analisi motivazionale in corso...</div>
+                </div>
+
+                <div class="card">
+                    <h3>Registra Voto</h3>
+                    <select id="input-subject"><option value="">Caricamento...</option></select>
+                    <label style="font-size:0.8rem; color:var(--text-muted);">Voto (Min 1 - Max 10)</label>
+                    <input type="text" id="input-grade" placeholder="Es. 7, 7+, 6.5">
+                    <label style="font-size:0.8rem; color:var(--text-muted);">Peso % (Min 1% - Max 100%)</label>
+                    <div style="display:flex; align-items:center; gap:5px; margin-bottom:15px;">
+                        <input type="number" id="input-weight" value="100" min="1" max="100" style="margin-bottom:0;">
+                        <span>%</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="addGradeDB()">Salva Voto</button>
+                </div>
+
+                <div class="card">
+                    <h3>Nuova Materia</h3>
+                    <input type="text" id="new-subject-name" placeholder="Nome Materia">
+                    <button class="btn btn-outline" style="color:white; border-color:white;" onclick="addSubjectDB()">Crea</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="detail-screen">
+        <div style="width: 100%; max-width: 800px;">
+            <button class="btn" style="width:auto; background:none; text-align:left; padding-left:0;" onclick="closeDetail()">
+                <i class="fa-solid fa-arrow-left"></i> Torna alla Dashboard
+            </button>
+            <div class="card" style="margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h1 id="detail-title" style="margin:0;">Materia</h1>
+                    <div>
+                        <div id="detail-average" style="font-size: 2.5rem; font-weight:bold; text-align:right;">0.0</div>
+                        <small style="color:var(--text-muted)">Media Ponderata</small>
+                    </div>
+                </div>
+            </div>
+            <div id="strategy-container"></div>
+            <div class="card">
+                <h3>Registro Voti</h3>
+                <div id="detail-grades-list" style="display:flex; flex-direction:column; gap:5px;"></div>
+                <br>
+                <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger); width:auto;" onclick="deleteCurrentSubject()">
+                    <i class="fa-solid fa-trash"></i> Elimina Materia
+                </button>
+            </div>
+             <div class="card">
+                <h3>Andamento</h3>
+                <div class="chart-container" style="height: 200px;"><canvas id="detailChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        /* --- FIREBASE CONFIG --- */
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZ36t3Zi0D_A1q2MjjZp2V6d1Zb2adGzs",               authDomain: "mioregistro-668d3.firebaseapp.com",               projectId: "mioregistro-668d3",               storageBucket: "mioregistro-668d3.firebasestorage.app",               messagingSenderId: "114433976476",               appId: "1:114433976476:web:49c7628bf354783372a559",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let userData = {};
+        let userName = "Studente";
+        let userPronoun = "m";
+        let myChart = null;
+        let detailChart = null;
+        let isRegisterMode = false;
+
+        // --- EXPORT GLOBALS ---
+        window.toggleAuthMode = toggleAuthMode;
+        window.handleAuth = handleAuth;
+        window.loginWithGoogle = loginWithGoogle;
+        window.saveSetup = saveSetup;
+        window.toggleMenu = toggleMenu;
+        window.logoutUser = () => signOut(auth);
+        window.deleteMyAccount = deleteMyAccount;
+        window.addGradeDB = addGradeDB;
+        window.addSubjectDB = addSubjectDB;
+        window.deleteGradeDB = deleteGradeDB;
+        window.deleteCurrentSubject = deleteCurrentSubject;
+        window.closeDetail = closeDetail;
+
+        /* --- AUTH SOCIAL & SETUP --- */
+        async function handleSocialLogin(provider) {
+            toggleLoader(true);
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+
+                if (!docSnap.exists()) {
+                    // Crea profilo parziale (PRONOUN NULL per attivare modal)
+                    const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motorie": [] };
+                    await setDoc(userRef, {
+                        username: user.displayName.split(' ')[0] || "Studente",
+                        pronoun: null,
+                        subjects: defaultSubjects
+                    });
+                }
+            } catch (error) { showError("Errore Social: " + error.message); toggleLoader(false); }
+        }
+
+        async function loginWithGoogle() { await handleSocialLogin(new GoogleAuthProvider()); }
+
+        async function saveSetup() {
+            const chosen = document.getElementById('setup-pronoun').value;
+            await updateDoc(doc(db, "users", currentUser.uid), { pronoun: chosen });
+            document.getElementById('setup-modal').style.display = 'none';
+        }
+
+        /* --- PARSING & AUTH CLASSIC --- */
+        function parseGradeInput(input) {
+            let str = input.toString().replace(',', '.').trim();
+            let val = parseFloat(str);
+            let display = str;
+            if (isNaN(val)) return null;
+            if (str.endsWith('+')) val = parseFloat(str) + 0.20;
+            else if (str.endsWith('-')) val = parseFloat(str) - 0.20;
+            return { numeric: val, display: display };
+        }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('auth-btn');
+            const link = document.querySelector('.auth-switch');
+            const nameField = document.getElementById('register-name-field');
+
+            if(isRegisterMode) {
+                title.innerText = "Inizia il tuo percorso";
+                btn.innerText = "Crea Account";
+                link.innerText = "Hai già un account? Accedi";
+                nameField.classList.add('show-name-field');
+            } else {
+                title.innerText = "Bentornato!";
+                btn.innerText = "Accedi";
+                link.innerText = "Non hai un account? Registrati";
+                nameField.classList.remove('show-name-field');
+            }
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email-input').value;
+            const pass = document.getElementById('password-input').value;
+            if(!email || !pass) return showError("Compila campi");
+            toggleLoader(true);
+            try {
+                if(isRegisterMode) {
+                    const name = document.getElementById('name-input').value.trim();
+                    if(!name) throw new Error("Inserisci il tuo nome!");
+                    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                    const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motorie": [] };
+                    // PRONOUN NULL anche qui, per chiedere conferma
+                    await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, subjects: defaultSubjects });
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+            } catch(err) { showError(err.message); toggleLoader(false); }
+        }
+
+        /* --- LOGIC --- */
+        function toggleMenu() { document.getElementById("myDropdown").classList.toggle("show"); }
+        window.onclick = function(e) { if (!e.target.matches('.menu-btn') && !e.target.matches('.menu-btn *')) { document.getElementById("myDropdown").classList.remove('show'); } }
+        async function deleteMyAccount() {
+            if(!confirm("Sicuro di voler cancellare?")) return;
+            try { await deleteDoc(doc(db, "users", currentUser.uid)); await deleteUser(currentUser); } catch(e){ alert("Rifai login per cancellare"); signOut(auth); }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            toggleLoader(false);
+            if (user) {
+                currentUser = user;
+                switchScreen('app');
+                listenToData();
+            } else { switchScreen('login'); }
+        });
+
+        function listenToData() {
+            onSnapshot(doc(db, "users", currentUser.uid), (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    userData = data.subjects || {};
+                    userName = data.username || "Studente";
+                    
+                    // CONTROLLO PRONOME MANCANTE
+                    if (!data.pronoun) {
+                        document.getElementById('setup-modal').style.display = 'flex';
+                        userPronoun = 'n';
+                    } else {
+                        document.getElementById('setup-modal').style.display = 'none';
+                        userPronoun = data.pronoun;
+                    }
+
+                    document.getElementById('display-name').innerText = userName;
+                    updateUI(userData);
+                    const title = document.getElementById('detail-title').innerText;
+                    if(document.getElementById('detail-screen').style.display === 'flex' && userData[title]) renderDetail(title);
+                }
+            });
+        }
+        
+        async function addSubjectDB() {
+            const name = document.getElementById('new-subject-name').value.trim();
+            if(!name || userData[name]) return;
+            userData[name] = [];
+            await updateDoc(doc(db,"users",currentUser.uid), {subjects: userData});
+            document.getElementById('new-subject-name').value = '';
+        }
+        async function addGradeDB() {
+            const s = document.getElementById('input-subject').value;
+            const inputVal = document.getElementById('input-grade').value;
+            const w = parseFloat(document.getElementById('input-weight').value);
+            if(!s || !inputVal || isNaN(w)) return alert("Dati errati");
+            if (w < 1 || w > 100) return alert("Peso 1-100%");
+            const parsed = parseGradeInput(inputVal);
+            if(!parsed || parsed.numeric < 1 || parsed.numeric > 10) return alert("Voto 1-10");
+            userData[s].push({ val: parsed.numeric, display: parsed.display, weight: w, id: Date.now() });
+            await updateDoc(doc(db,"users",currentUser.uid), {subjects: userData});
+            document.getElementById('input-grade').value = '';
+        }
+        async function deleteGradeDB(s, id) { if(confirm("Eliminare?")) { userData[s] = userData[s].filter(g => (g.id||g)!=id); await updateDoc(doc(db,"users",currentUser.uid), {subjects:userData}); } }
+        async function deleteCurrentSubject() { const n = document.getElementById('detail-title').innerText; if(confirm("Eliminare "+n+"?")) { delete userData[n]; await updateDoc(doc(db,"users",currentUser.uid), {subjects:userData}); closeDetail(); } }
+
+        function getGradeInfo(g) { if (typeof g === 'number') return { val: g, display: g, weight: 100, id: g }; return { val: g.val, display: g.display || g.val, weight: g.weight || 100, id: g.id }; }
+        function calculateWeightedAvg(grades) { if (!grades.length) return 0; let s=0, tw=0; grades.forEach(g => { const i=getGradeInfo(g); s+=i.val*(i.weight/100); tw+=(i.weight/100); }); return tw===0?0:(s/tw); }
+        function switchScreen(name) { ['login','app','detail'].forEach(id => document.getElementById(id+'-screen').style.display = 'none'); document.getElementById(name+'-screen').style.display = 'flex'; }
+        window.openDetail = (name) => { switchScreen('detail'); renderDetail(name); };
+        function closeDetail() { switchScreen('app'); }
+
+        function updateUI(subjects) {
+            const cont = document.getElementById('subjects-container');
+            const sel = document.getElementById('input-subject');
+            cont.innerHTML = ''; sel.innerHTML = '<option value="">Seleziona...</option>';
+            let gs=0, gc=0, gi=0; const l=[], d=[];
+            for (const [n, g] of Object.entries(subjects)) {
+                const opt = document.createElement('option'); opt.value = n; opt.innerText = n; sel.appendChild(opt);
+                const avg = calculateWeightedAvg(g);
+                if(g.length) { gs+=avg; gc++; gi+=g.length; }
+                l.push(n); d.push(avg);
+                const div = document.createElement('div'); div.className = 'subject-card'; div.onclick = () => openDetail(n);
+                div.innerHTML = `<div><strong>${n}</strong><br><small style="color:var(--text-muted)">${g.length} voti</small></div><div style="font-size:1.5rem; color:${avg>=6?'var(--success)':'var(--danger)'}">${avg>0?avg.toFixed(1):'-'}</div>`;
+                cont.appendChild(div);
+            }
+            let gAvg = gc>0 ? (gs/gc).toFixed(2) : 0;
+            document.getElementById('global-average').innerText = gAvg;
+            document.getElementById('count-subjects').innerText = gc;
+            document.getElementById('count-grades').innerText = gi;
+            updateMentalCoach(gAvg);
+            if(myChart) myChart.destroy();
+            myChart = new Chart(document.getElementById('gradeChart'), {
+                type: 'radar',
+                data: { labels: l, datasets: [{ label: 'Media', data: d, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.2)', borderColor: '#6366f1', pointBackgroundColor: '#fff', pointHoverBorderColor: '#6366f1' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 10, angleLines: { color: 'rgba(255, 255, 255, 0.1)' }, grid: { color: 'rgba(255, 255, 255, 0.05)' }, pointLabels: { color: '#f8fafc' }, ticks: { backdropColor: 'transparent', color: '#94a3b8', stepSize: 1, callback: v => (v===6||v===10)?v:'' } } } }
+            });
+        }
+
+        function updateMentalCoach(avg) {
+            const isM = userPronoun === 'm'; const isF = userPronoun === 'f';
+            const o_a = isM ? 'o' : (isF ? 'a' : 'o');
+            const bravo = isM ? 'bravissimo' : (isF ? 'bravissima' : 'una forza');
+            const sicuro = isM ? 'sicuro' : (isF ? 'sicura' : 'in zona sicura');
+            const phrases = {
+                welcome: [`Ciao ${userName}, benvenut${o_a}!`, `Pront${o_a} a spaccare tutto ${userName}?`],
+                excellent: [`Wow ${userName}, sei ${bravo}!`, `Livello leggendario! 🚀`],
+                good: [`Bene ${userName}, sei ${sicuro}.`, `Avanti così! 👍`],
+                borderline: [`Occhio ${userName}, siamo al limite.`, `Non mollare ora!`],
+                critical: [`Momento no? Capita a tutti.`, `Testa alta e recuperiamo!`]
+            };
+            let list = avg==0 ? phrases.welcome : (avg>=8 ? phrases.excellent : (avg>=6 ? phrases.good : (avg>=5 ? phrases.borderline : phrases.critical)));
+            document.getElementById('coach-message').innerHTML = list[Math.floor(Math.random()*list.length)];
+        }
+
+        function renderDetail(name) {
+            const grades = userData[name] || [];
+            document.getElementById('detail-title').innerText = name;
+            let cS=0, cW=0, maxG=0;
+            grades.forEach(g => { const i=getGradeInfo(g); cS+=i.val*(i.weight/100); cW+=(i.weight/100); if(i.val>maxG) maxG=i.val; });
+            const avg = cW>0 ? (cS/cW) : 0;
+            document.getElementById('detail-average').innerText = avg.toFixed(2);
+            document.getElementById('detail-average').style.color = avg>=6?'var(--success)':'var(--danger)';
+            
+            const ld = document.getElementById('detail-grades-list'); ld.innerHTML = '';
+            grades.forEach(g => {
+                const i=getGradeInfo(g);
+                ld.innerHTML += `<div class="grade-item-detailed"><div class="grade-val ${i.val>=6?'grade-good':'grade-bad'}">${i.display}</div><div style="flex-grow:1"><span style="font-size:0.8rem;opacity:0.7">Voto:${i.val.toFixed(2)}</span><span class="grade-weight">Peso:${i.weight}%</span></div><i class="fa-solid fa-trash delete-single-btn" onclick="deleteGradeDB('${name}', ${i.id})"></i></div>`;
+            });
+
+            const sb = document.getElementById('strategy-container');
+            let html = '';
+            const isM = userPronoun === 'm'; const isF = userPronoun === 'f';
+            const bravo = isM ? "Bravissimo" : (isF ? "Bravissima" : "Grande");
+
+            if (avg >= 6) {
+                const minGrade = Math.ceil((6 * (cW + 1) - cS) * 10) / 10;
+                sb.className = 'strategy-box strategy-safe';
+                html = `<h3><i class="fa-solid fa-trophy"></i> ${bravo} ${userName}!</h3><p>${minGrade<=1 ? `Sei blindat${isM?'o':(isF?'a':'o')}! Anche con 1 resti sufficiente.` : `Per restare a galla ti basta un:`}</p>`;
+                if(minGrade > 1) html += `<div class="safety-card"><small>MINIMO SALVEZZA</small><br><div class="safety-val">${minGrade}</div></div>`;
+            } else {
+                sb.className = 'strategy-box strategy-danger';
+                const oneShot = (6 * (cW + 1)) - cS;
+                let osHtml = oneShot > 10 ? `<div class="oneshot-card" style="border-color:var(--danger);color:var(--danger)"><small>VOTO UNICO</small><br><strong>Impossibile</strong></div>` : `<div class="oneshot-card"><small>COLPO DI GENIO</small><br><div class="oneshot-val">${Math.max(1, Math.round(oneShot*10)/10)}</div></div>`;
+                
+                const cap = maxG < 6 ? 6.5 : maxG;
+                let gn = 1, found = false, path = [];
+                while (!found && gn < 20) {
+                    gn++;
+                    const need = (6 * (cW + gn)) - cS;
+                    const navg = need / gn;
+                    if (navg <= cap && navg <= 10) found = true;
+                }
+                let pHtml = '';
+                if(found) {
+                    if(gn===1) path.push(Math.max((6*(cW+1)-cS), 6));
+                    else {
+                        const delta = 0.5, step = (delta*2)/(gn-1);
+                        let run = 0;
+                        const avgNeed = ((6*(cW+gn))-cS)/gn;
+                        for(let i=0;i<gn;i++) {
+                            let r = (avgNeed-delta)+(step*i);
+                            if(r>cap) r=cap; if(r>10) r=10; if(r<1) r=1;
+                            let cl = Math.round(r*10)/10;
+                            path.push(cl); run+=cl;
+                        }
+                        let diff = ((6*(cW+gn))-cS) - run;
+                        if(diff>0) path[path.length-1] = Math.min(path[path.length-1]+diff, 10);
+                    }
+                    path = path.map(v=>Math.round(v*10)/10).sort((a,b)=>a-b);
+                    pHtml = `<p>Strategia scalata (Max ${cap}):</p><div class="path-steps">` + path.map(s => `<div class="path-step" style="${s>cap?'border-color:orange':''}"><i class="fa-solid fa-shoe-prints"></i> ${s}</div>`).join('') + `</div>`;
+                } else pHtml = `<p>Recupero complesso.</p>`;
+                html = `<h3><i class="fa-solid fa-chess-board"></i> Strategie</h3>${pHtml}<div class="strategy-divider"><span>OPPURE</span></div>${osHtml}`;
+            }
+            sb.innerHTML = html;
+
+            if(detailChart) detailChart.destroy();
+            let ps=0, pw=0;
+            detailChart = new Chart(document.getElementById('detailChart'), {
+                type: 'line',
+                data: { labels: grades.map((_,i)=>`Voto ${i+1}`), datasets: [{ label: 'Andamento', data: grades.map(g => { const i=getGradeInfo(g); ps+=i.val*(i.weight/100); pw+=(i.weight/100); return (ps/pw).toFixed(1); }), borderColor: '#6366f1', tension: 0.3, fill:true, backgroundColor: 'rgba(99,102,241,0.2)' }] },
+                options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{min:1, max:10}} }
+            });
+        }
+
+        function toggleLoader(s){document.getElementById('loader').style.display=s?'block':'none'}
+        function showError(m){document.getElementById('error-msg').innerText=m}
+    </script>
+</body>
+</html>
