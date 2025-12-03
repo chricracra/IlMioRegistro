@@ -31,6 +31,8 @@ Il progetto è puro HTML/JS, non richiede installazioni complesse.
 
 ### Installazione
 
+---
+
 ## 📱 Installazione su Smartphone (Android & iOS)
 
 NeoRegister è una **Progressive Web App (PWA)**. Questo significa che puoi installarla direttamente dal browser senza passare dagli Store (App Store o Play Store). L'app apparirà nella tua Home, funzionerà a schermo intero e occuperà pochissimo spazio.
@@ -49,7 +51,9 @@ NeoRegister è una **Progressive Web App (PWA)**. Questo significa che puoi inst
 3. Scorri il menu verso il basso fino a trovare la voce ➕ **"Aggiungi alla schermata Home"**.
 4. Clicca su **Aggiungi** in alto a destra.
 5. Troverai l'icona di NeoRegister sulla tua Home Screen.
-   
+
+---
+
 1.  **Clona il repository:**
     ```bash
     git clone [https://github.com/chricracra/IlMioRegistro.git](https://github.com/chricracra/IlMioRegistro.git)
