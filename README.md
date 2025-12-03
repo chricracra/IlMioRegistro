@@ -5,6 +5,7 @@
 **NeoRegister** è una Single Page Application (SPA) moderna e intelligente per gestire i tuoi voti scolastici. Non è solo un registro, è un vero e proprio assistente che ti aiuta a pianificare le tue strategie di studio con l'aiuto dell'Intelligenza Artificiale.
 
 🔗 **Repository:** [https://github.com/chricracra/IlMioRegistro.git](https://github.com/chricracra/IlMioRegistro.git)
+
 🔗 **Sito Web** [https://ilmioneoregistro.netlify.app](https://ilmioneoregistro.netlify.app)
 
 ## ✨ Funzionalità Avanzate
