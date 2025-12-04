@@ -473,19 +473,70 @@
         }
 
         function updateMentalCoach(avg) {
-            const isM = userPronoun === 'm'; const isF = userPronoun === 'f';
-            const o_a = isM ? 'o' : (isF ? 'a' : 'o');
+            const isM = userPronoun === 'm';
+            const isF = userPronoun === 'f';
+            
+            // --- VARIABILI DINAMICHE PER I PRONOMI ---
+            // Desinenze e aggettivi adattati
+            const o_a = isM ? 'o' : (isF ? 'a' : '*');
             const bravo = isM ? 'bravissimo' : (isF ? 'bravissima' : 'una forza');
-            const sicuro = isM ? 'sicuro' : (isF ? 'sicura' : 'in zona sicura');
+            const pronto = isM ? 'pronto' : (isF ? 'pronta' : 'pront*');
+            const carico = isM ? 'carico' : (isF ? 'carica' : 'a mille');
+            const concentrato = isM ? 'concentrato' : (isF ? 'concentrata' : 'sul pezzo');
+            const determinato = isM ? 'determinato' : (isF ? 'determinata' : 'con grinta');
+            const campione = isM ? 'campione' : (isF ? 'campionessa' : 'star');
+
+            // --- DATABASE FRASI ---
             const phrases = {
-                welcome: [`Ciao ${userName}, benvenut${o_a}!`, `Pront${o_a} a spaccare tutto ${userName}?`],
-                excellent: [`Wow ${userName}, sei ${bravo}!`, `Livello leggendario! 🚀`],
-                good: [`Bene ${userName}, sei ${sicuro}.`, `Avanti così! 👍`],
-                borderline: [`Occhio ${userName}, siamo al limite.`, `Non mollare ora!`],
-                critical: [`Momento no? Capita a tutti.`, `Testa alta e recuperiamo!`]
+                welcome: [
+                    `Ciao ${userName}, benvenut${o_a}!`,
+                    `Tutto ${pronto} per spaccare, ${userName}?`,
+                    `Facciamo vedere a tutti di che pasta sei fatt${o_a}!`,
+                    `Nuovo giorno, nuovi successi. Sei ${carico}?`,
+                    `Il tuo registro ti aspetta. Andiamo!`
+                ],
+                excellent: [ // Media >= 8
+                    `Wow ${userName}, sei ${bravo}!`,
+                    `Livello leggendario! 🚀`,
+                    `Non ti ferma più nessuno, sei un treno!`,
+                    `Che media spaziale, sei un vero ${campione}.`,
+                    `Stai dominando la scuola, continua così!`,
+                    `Semplicemente impeccabile.`
+                ],
+                good: [ // Media >= 6
+                    `Bene ${userName}, stai andando alla grande.`,
+                    `La rotta è quella giusta, avanti tutta! 👍`,
+                    `Situazione sotto controllo, ottima gestione.`,
+                    `Sei in una botte di ferro, mantieni il ritmo.`,
+                    `Solido come una roccia. Bel lavoro!`,
+                    `Niente male, sei decisamente ${determinato}.`
+                ],
+                borderline: [ // Media >= 5 e < 6
+                    `Occhio ${userName}, siamo sul filo del rasoio.`,
+                    `Resta ${concentrato}, basta un piccolo sforzo per risalire.`,
+                    `Non mollare ora! Il 6 è a portata di mano.`,
+                    `Vietato distrarsi: serve l'ultimo sprint!`,
+                    `Stringi i denti, puoi farcela a recuperare.`
+                ],
+                critical: [ // Media < 5
+                    `Momento no? Capita anche ai migliori.`,
+                    `Testa alta e schiena dritta: recuperiamo tutto!`,
+                    `Non è finita finché non lo decidi tu.`,
+                    `Resetta tutto e riparti. Credo in te!`,
+                    `Trasforma la rabbia in energia per la rimonta.`
+                ]
             };
-            let list = avg==0 ? phrases.welcome : (avg>=8 ? phrases.excellent : (avg>=6 ? phrases.good : (avg>=5 ? phrases.borderline : phrases.critical)));
-            document.getElementById('coach-message').innerHTML = list[Math.floor(Math.random()*list.length)];
+
+            // Selezione lista in base alla media
+            let list;
+            if (avg == 0) list = phrases.welcome;
+            else if (avg >= 8) list = phrases.excellent;
+            else if (avg >= 6) list = phrases.good;
+            else if (avg >= 5) list = phrases.borderline;
+            else list = phrases.critical;
+
+            // Scelta casuale dalla lista
+            document.getElementById('coach-message').innerHTML = list[Math.floor(Math.random() * list.length)];
         }
 
         function renderDetail(name) {
