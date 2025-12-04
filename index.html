@@ -433,6 +433,7 @@
             userData[s].push({ val: parsed.numeric, display: parsed.display, weight: w, id: Date.now() });
             await updateDoc(doc(db,"users",currentUser.uid), {subjects: userData});
             document.getElementById('input-grade').value = '';
+            document.getElementById('input-weight').value = '100';
         }
         async function deleteGradeDB(s, id) { if(confirm("Eliminare?")) { userData[s] = userData[s].filter(g => (g.id||g)!=id); await updateDoc(doc(db,"users",currentUser.uid), {subjects:userData}); } }
         async function deleteCurrentSubject() { const n = document.getElementById('detail-title').innerText; if(confirm("Eliminare "+n+"?")) { delete userData[n]; await updateDoc(doc(db,"users",currentUser.uid), {subjects:userData}); closeDetail(); } }
