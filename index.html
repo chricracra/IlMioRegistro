@@ -307,7 +307,7 @@
 
                 if (!docSnap.exists()) {
                     // Crea profilo parziale (PRONOUN NULL per attivare modal)
-                    const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motorie": [] };
+                    const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motoria": [] };
                     await setDoc(userRef, {
                         username: user.displayName.split(' ')[0] || "Studente",
                         pronoun: null,
@@ -366,7 +366,7 @@
                     const name = document.getElementById('name-input').value.trim();
                     if(!name) throw new Error("Inserisci il tuo nome!");
                     const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                    const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motorie": [] };
+                    const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motoria": [] };
                     // PRONOUN NULL anche qui, per chiedere conferma
                     await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, subjects: defaultSubjects });
                 } else {
