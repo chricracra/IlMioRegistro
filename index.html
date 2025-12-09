@@ -34,11 +34,41 @@
             color: var(--text-main);
             margin: 0; padding: 0; min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        #app-screen, #detail-screen { display: none; width: 100%; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; animation: fadeIn 0.5s ease; }
-        #login-screen { width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; z-index: 100; background: var(--bg-color); }
+        #app-screen, #detail-screen, #settings-screen { display: none; width: 100%; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; animation: fadeIn 0.5s ease; }
+        
+        /* LOGIN SCREEN ADATTIVO */
+        #login-screen {
+            width: 100%; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            position: absolute; top: 0; left: 0; z-index: 100;
+            background: var(--bg-color); /* Ora usa la variabile! */
+            color: var(--text-main);
+            transition: background-color 0.3s ease;
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- COOKIE BANNER --- */
+        #cookie-banner {
+            display: none; /* Nascosto di default, mostrato via JS */
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid var(--accent-color);
+            padding: 20px; box-sizing: border-box;
+            z-index: 999; text-align: center;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        body.light-mode #cookie-banner {
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #cbd5e1;
+            color: #0f172a;
+        }
 
         /* --- SETUP MODAL --- */
         #setup-modal {
@@ -70,13 +100,23 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4); }
         .btn-outline { background: transparent; border: 1px solid var(--accent-color); margin-right: 10px; }
 
-        /* Social & Divider */
+        /* Social & Divider - MIGLIORATO PER CONTRASTO */
         .btn-social {
             width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
-            background: white; color: #333; border: none; padding: 12px; border-radius: 8px;
-            cursor: pointer; transition: 0.3s; font-weight: bold; margin-bottom: 15px;
+            background: white;
+            color: #1e293b;
+            border: 1px solid #cbd5e1; /* Bordo grigio per staccare dal bianco */
+            padding: 12px; border-radius: 8px;
+            cursor: pointer; transition: 0.3s; font-weight: 600; margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Ombra leggera */
+            position: relative;
         }
-        .btn-social:hover { background: #f1f5f9; transform: translateY(-2px); }
+        .btn-social:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Ombra più marcata all'hover */
+            border-color: #94a3b8;
+        }
         
         .divider { display: flex; align-items: center; text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 20px 0; }
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--glass-border); }
@@ -132,9 +172,137 @@
         .stat-value { font-size: 2rem; font-weight: bold; }
         .chart-container { position: relative; height: 350px; width: 100%; }
         #loader { display: none; margin-top: 10px; color: var(--accent-color); }
+        
+        /* --- TEMA CHIARO (Light Mode) MIGLIORATO --- */
+        body.light-mode {
+            --bg-color: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 1);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.2) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 40%);
+        }
+
+        body.light-mode .card {
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        /* MENU TENDINA CHIARO */
+        body.light-mode .dropdown-content {
+            background: white !important;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        body.light-mode .dropdown-content a { color: #0f172a; }
+        body.light-mode .dropdown-content a:hover { background-color: #f1f5f9; }
+        body.light-mode .menu-btn {
+            background: rgba(255,255,255,0.5);
+            color: #0f172a;
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        /* MENTAL COACH TESTO CHIARO */
+        body.light-mode .coach-text { color: #334155 !important; font-weight: 500; }
+
+        /* INPUT E SELECT CHIARO */
+        body.light-mode input, body.light-mode select {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+        body.light-mode input:focus, body.light-mode select:focus {
+            background: #fff !important;
+            border-color: var(--accent-color) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        body.light-mode option { background: white; color: black; }
+
+        /* --- FIX RICHIESTI --- */
+
+        /* 1. SEPARAZIONE MATERIE */
+        body.light-mode .subject-card,
+        body.light-mode .grade-item-detailed {
+            background: white !important;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        body.light-mode .subject-card:hover {
+            background: #f8fafc !important;
+        }
+
+        /* 2. BOTTONE "ELIMINA ACCOUNT" ROSSO */
+        body.light-mode .btn[style*="--danger"] {
+            color: #ef4444 !important;
+            border-color: #ef4444 !important;
+        }
+        body.light-mode .btn[style*="--danger"]:hover {
+            background: #ef4444 !important;
+            color: white !important;
+        }
+
+        /* 3. ALTRI BOTTONI OUTLINE */
+        body.light-mode .btn-outline:not([style*="--danger"]) {
+            border-color: var(--accent-color) !important;
+            color: var(--accent-color) !important;
+        }
+        body.light-mode .btn-outline:not([style*="--danger"]):hover {
+            background: var(--accent-color) !important;
+            color: white !important;
+        }
+
+        /* Tasti "Torna Indietro" neri */
+        body.light-mode .btn[style*="background:none"],
+        body.light-mode .btn[style*="background: none"] {
+            color: #0f172a !important;
+        }
+
+        /* 4. FIX CONTRASTO STRATEGIE */
+        body.light-mode .strategy-safe {
+            color: #166534 !important; /* Verde Scuro Bosco */
+            background: rgba(22, 101, 52, 0.1) !important;
+            border-color: #166534 !important;
+        }
+        body.light-mode .strategy-danger {
+            color: #991b1b !important; /* Rosso Scuro Sangue */
+            background: rgba(153, 27, 27, 0.1) !important;
+            border-color: #991b1b !important;
+        }
+        
+        body.light-mode .safety-card {
+            color: #15803d !important;
+            border-color: #15803d !important;
+            background: rgba(21, 128, 61, 0.1);
+        }
+        body.light-mode .oneshot-card {
+            color: #b45309 !important; /* Oro scuro leggibile */
+            border-color: #b45309 !important;
+            background: rgba(180, 83, 9, 0.1);
+        }
+        body.light-mode .path-step {
+            color: #0f172a !important;
+            background: white !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* SWITCH CSS */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(24px); }
     </style>
 </head>
 <body>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        })();
+    </script>
 
     <div id="login-screen">
         <div class="card" style="width: 350px; text-align: center;">
@@ -142,7 +310,8 @@
             <p id="auth-title" style="color: var(--text-muted); margin-bottom: 20px;">Accedi al tuo account</p>
             
             <button class="btn-social" onclick="loginWithGoogle()">
-                <i class="fa-brands fa-google" style="color:#DB4437; font-size:1.2rem;"></i> Accedi con Google
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width: 20px; height: 20px;">
+                Accedi con Google
             </button>
 
             <div class="divider"><span>OPPURE CON EMAIL</span></div>
@@ -158,6 +327,19 @@
             <div class="auth-switch" onclick="toggleAuthMode()">Non hai un account? Registrati</div>
             <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i> Attendi...</div>
             <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="cookie-banner">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <p style="margin-bottom: 15px; font-size: 0.95rem;">
+                <i class="fa-solid fa-cookie-bite" style="color: var(--gold)"></i>
+                Questo sito usa un salvataggio locale per ricordare la tua preferenza sul <strong>Tema (Chiaro/Scuro)</strong> sul questo dispositivo. Vuoi accettare?
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn btn-outline" style="width: auto; padding: 8px 20px;" onclick="handleCookieConsent(false)">Rifiuta</button>
+                <button class="btn btn-primary" style="width: auto; padding: 8px 20px;" onclick="handleCookieConsent(true)">Accetta</button>
+            </div>
         </div>
     </div>
 
@@ -183,8 +365,8 @@
             <div class="dropdown">
                 <button onclick="toggleMenu()" class="menu-btn"><i class="fa-solid fa-user-gear"></i> Account <i class="fa-solid fa-caret-down"></i></button>
                 <div id="myDropdown" class="dropdown-content">
+                    <a onclick="openSettings()"><i class="fa-solid fa-gear"></i> Impostazioni</a>
                     <a onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Esci</a>
-                    <a onclick="deleteMyAccount()" class="dropdown-danger"><i class="fa-solid fa-trash-can"></i> Elimina Account</a>
                 </div>
             </div>
         </header>
@@ -224,7 +406,7 @@
                 <div class="card">
                     <h3>Nuova Materia</h3>
                     <input type="text" id="new-subject-name" placeholder="Nome Materia">
-                    <button class="btn btn-outline" style="color:white; border-color:white;" onclick="addSubjectDB()">Crea</button>
+                    <button class="btn btn-outline" onclick="addSubjectDB()">Crea</button>
                 </div>
             </aside>
         </div>
@@ -259,7 +441,37 @@
             </div>
         </div>
     </div>
+    <div id="settings-screen">
+        <div style="width: 100%; max-width: 800px;">
+            <button class="btn" style="width:auto; background:none; text-align:left; padding-left:0;" onclick="closeSettings()">
+                <i class="fa-solid fa-arrow-left"></i> Torna alla Dashboard
+            </button>
 
+            <div class="card" style="margin-top:10px;">
+                <h1><i class="fa-solid fa-sliders"></i> Impostazioni</h1>
+                <p style="color:var(--text-muted)">Gestisci il tuo account e le preferenze di NeoRegister.</p>
+            </div>
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <div>
+                    <h3 style="margin:0;"><i class="fa-solid fa-moon"></i> Tema Scuro</h3>
+                    <small style="color:var(--text-muted)">Disattiva per passare al tema chiaro</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch" onchange="toggleThemeDB()" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="card" style="border: 1px solid var(--danger);">
+                <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Zona Pericolosa</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 20px;">
+                    L'eliminazione dell'account è irreversibile. Perderai tutti i voti e le materie salvate.
+                </p>
+                <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="deleteMyAccount()">
+                    <i class="fa-solid fa-trash-can"></i> Elimina il mio Account
+                </button>
+            </div>
+        </div>
+    </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -283,6 +495,8 @@
         let isRegisterMode = false;
 
         // --- EXPORT GLOBALS ---
+        window.openSettings = () => { switchScreen('settings'); document.getElementById("myDropdown").classList.remove('show'); };
+        window.closeSettings = () => switchScreen('app');
         window.toggleAuthMode = toggleAuthMode;
         window.handleAuth = handleAuth;
         window.loginWithGoogle = loginWithGoogle;
@@ -296,6 +510,28 @@
         window.deleteCurrentSubject = deleteCurrentSubject;
         window.closeDetail = closeDetail;
 
+        // --- COOKIE & THEME LOGIC EXPORTS ---
+        window.handleCookieConsent = (accepted) => {
+            document.getElementById('cookie-banner').style.display = 'none';
+            if (accepted) {
+                localStorage.setItem('cookieConsent', 'true');
+                // Se c'è già un tema attivo, salvalo ora
+                const isLight = document.body.classList.contains('light-mode');
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            } else {
+                localStorage.removeItem('cookieConsent');
+                localStorage.removeItem('theme'); // Rimuovi per rispetto privacy
+            }
+        };
+
+        /* --- INIT COOKIES --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const consent = localStorage.getItem('cookieConsent');
+            if (!consent) {
+                setTimeout(() => document.getElementById('cookie-banner').style.display = 'block', 1000);
+            }
+        });
+
         /* --- AUTH SOCIAL & SETUP --- */
         async function handleSocialLogin(provider) {
             toggleLoader(true);
@@ -306,7 +542,6 @@
                 const docSnap = await getDoc(userRef);
 
                 if (!docSnap.exists()) {
-                    // Crea profilo parziale (PRONOUN NULL per attivare modal)
                     const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motoria": [] };
                     await setDoc(userRef, {
                         username: user.displayName.split(' ')[0] || "Studente",
@@ -367,7 +602,6 @@
                     if(!name) throw new Error("Inserisci il tuo nome!");
                     const cred = await createUserWithEmailAndPassword(auth, email, pass);
                     const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motoria": [] };
-                    // PRONOUN NULL anche qui, per chiedere conferma
                     await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, subjects: defaultSubjects });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
@@ -393,13 +627,17 @@
         });
 
         function listenToData() {
-            onSnapshot(doc(db, "users", currentUser.uid), (doc) => {
-                if (doc.exists()) {
-                    const data = doc.data();
+            onSnapshot(doc(db, "users", currentUser.uid), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
                     userData = data.subjects || {};
                     userName = data.username || "Studente";
                     
-                    // CONTROLLO PRONOME MANCANTE
+                    // Se non abbiamo un salvataggio locale, usiamo quello del DB, altrimenti quello locale vince (per l'avvio)
+                    const localTheme = localStorage.getItem('theme');
+                    const savedTheme = localTheme || data.theme || 'dark';
+                    applyTheme(savedTheme);
+
                     if (!data.pronoun) {
                         document.getElementById('setup-modal').style.display = 'flex';
                         userPronoun = 'n';
@@ -410,12 +648,15 @@
 
                     document.getElementById('display-name').innerText = userName;
                     updateUI(userData);
+                    
                     const title = document.getElementById('detail-title').innerText;
-                    if(document.getElementById('detail-screen').style.display === 'flex' && userData[title]) renderDetail(title);
+                    if(document.getElementById('detail-screen').style.display === 'flex' && userData[title]) {
+                        renderDetail(title);
+                    }
                 }
             });
         }
-        
+
         async function addSubjectDB() {
             const name = document.getElementById('new-subject-name').value.trim();
             if(!name || userData[name]) return;
@@ -441,43 +682,95 @@
 
         function getGradeInfo(g) { if (typeof g === 'number') return { val: g, display: g, weight: 100, id: g }; return { val: g.val, display: g.display || g.val, weight: g.weight || 100, id: g.id }; }
         function calculateWeightedAvg(grades) { if (!grades.length) return 0; let s=0, tw=0; grades.forEach(g => { const i=getGradeInfo(g); s+=i.val*(i.weight/100); tw+=(i.weight/100); }); return tw===0?0:(s/tw); }
-        function switchScreen(name) { ['login','app','detail'].forEach(id => document.getElementById(id+'-screen').style.display = 'none'); document.getElementById(name+'-screen').style.display = 'flex'; }
+        
+        function switchScreen(name) {
+            ['login','app','detail','settings'].forEach(id => document.getElementById(id+'-screen').style.display = 'none');
+            document.getElementById(name+'-screen').style.display = 'flex';
+        }
         window.openDetail = (name) => { switchScreen('detail'); renderDetail(name); };
         function closeDetail() { switchScreen('app'); }
 
+        /* --- UPDATE UI & CHARTS (MODIFICATO PER LIGHT MODE) --- */
         function updateUI(subjects) {
             const cont = document.getElementById('subjects-container');
             const sel = document.getElementById('input-subject');
-            cont.innerHTML = ''; sel.innerHTML = '<option value="">Seleziona...</option>';
-            let gs=0, gc=0, gi=0; const l=[], d=[];
+            cont.innerHTML = '';
+            sel.innerHTML = '<option value="">Seleziona...</option>';
+            
+            let gs=0, gc=0, gi=0;
+            const l=[], d=[];
+
             for (const [n, g] of Object.entries(subjects)) {
                 const opt = document.createElement('option'); opt.value = n; opt.innerText = n; sel.appendChild(opt);
                 const avg = calculateWeightedAvg(g);
                 if(g.length) { gs+=avg; gc++; gi+=g.length; }
-                l.push(n); d.push(avg);
+                l.push(n);
+                d.push(avg);
                 const div = document.createElement('div'); div.className = 'subject-card'; div.onclick = () => openDetail(n);
                 div.innerHTML = `<div><strong>${n}</strong><br><small style="color:var(--text-muted)">${g.length} voti</small></div><div style="font-size:1.5rem; color:${avg>=6?'var(--success)':'var(--danger)'}">${avg>0?avg.toFixed(1):'-'}</div>`;
                 cont.appendChild(div);
             }
+
             let gAvg = gc>0 ? (gs/gc).toFixed(2) : 0;
             document.getElementById('global-average').innerText = gAvg;
             document.getElementById('count-subjects').innerText = gc;
             document.getElementById('count-grades').innerText = gi;
+            document.getElementById('coach-message').innerText = "";
             updateMentalCoach(gAvg);
+
             if(myChart) myChart.destroy();
+
+            // --- COLORI RADAR CHART ---
+            const isLight = document.body.classList.contains('light-mode');
+            const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+            const textColor = isLight ? '#1e293b' : '#f8fafc';
+            const backdrop = isLight ? 'rgba(255, 255, 255, 0.6)' : 'transparent'; // Sfondo etichette
+            const pointColor = isLight ? '#6366f1' : '#fff';
+
             myChart = new Chart(document.getElementById('gradeChart'), {
                 type: 'radar',
-                data: { labels: l, datasets: [{ label: 'Media', data: d, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.2)', borderColor: '#6366f1', pointBackgroundColor: '#fff', pointHoverBorderColor: '#6366f1' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 10, angleLines: { color: 'rgba(255, 255, 255, 0.1)' }, grid: { color: 'rgba(255, 255, 255, 0.05)' }, pointLabels: { color: '#f8fafc' }, ticks: { backdropColor: 'transparent', color: '#94a3b8', stepSize: 1, callback: v => (v===6||v===10)?v:'' } } } }
+                data: {
+                    labels: l,
+                    datasets: [{
+                        label: 'Media',
+                        data: d,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        borderColor: '#6366f1',
+                        pointBackgroundColor: pointColor,
+                        pointHoverBorderColor: '#6366f1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            min: 0, max: 10,
+                            angleLines: { color: gridColor },
+                            grid: { color: gridColor },
+                            pointLabels: {
+                                color: textColor,
+                                font: {size: 12, weight: 'bold'},
+                                backdropColor: backdrop, // Importante per leggibilità
+                                borderRadius: 4
+                            },
+                            ticks: {
+                                backdropColor: 'transparent', // Tolto backdrop dai numeri
+                                color: isLight ? '#64748b' : '#94a3b8',
+                                stepSize: 1,
+                                callback: v => (v===6||v===10)?v:''
+                            }
+                        }
+                    }
+                }
             });
         }
 
         function updateMentalCoach(avg) {
             const isM = userPronoun === 'm';
             const isF = userPronoun === 'f';
-            
-            // --- VARIABILI DINAMICHE PER I PRONOMI ---
-            // Desinenze e aggettivi adattati
             const o_a = isM ? 'o' : (isF ? 'a' : '*');
             const bravo = isM ? 'bravissimo' : (isF ? 'bravissima' : 'una forza');
             const pronto = isM ? 'pronto' : (isF ? 'pronta' : 'pront*');
@@ -486,56 +779,19 @@
             const determinato = isM ? 'determinato' : (isF ? 'determinata' : 'con grinta');
             const campione = isM ? 'campione' : (isF ? 'campionessa' : 'star');
 
-            // --- DATABASE FRASI ---
             const phrases = {
-                welcome: [
-                    `Ciao ${userName}, benvenut${o_a}!`,
-                    `Tutto ${pronto} per spaccare, ${userName}?`,
-                    `Facciamo vedere a tutti di che pasta sei fatt${o_a}!`,
-                    `Nuovo giorno, nuovi successi. Sei ${carico}?`,
-                    `Il tuo registro ti aspetta. Andiamo!`
-                ],
-                excellent: [ // Media >= 8
-                    `Wow ${userName}, sei ${bravo}!`,
-                    `Livello leggendario! 🚀`,
-                    `Non ti ferma più nessuno, sei un treno!`,
-                    `Che media spaziale, sei un vero ${campione}.`,
-                    `Stai dominando la scuola, continua così!`,
-                    `Semplicemente impeccabile.`
-                ],
-                good: [ // Media >= 6
-                    `Bene ${userName}, stai andando alla grande.`,
-                    `La rotta è quella giusta, avanti tutta! 👍`,
-                    `Situazione sotto controllo, ottima gestione.`,
-                    `Sei in una botte di ferro, mantieni il ritmo.`,
-                    `Solido come una roccia. Bel lavoro!`,
-                    `Niente male, sei decisamente ${determinato}.`
-                ],
-                borderline: [ // Media >= 5 e < 6
-                    `Occhio ${userName}, siamo sul filo del rasoio.`,
-                    `Resta ${concentrato}, basta un piccolo sforzo per risalire.`,
-                    `Non mollare ora! Il 6 è a portata di mano.`,
-                    `Vietato distrarsi: serve l'ultimo sprint!`,
-                    `Stringi i denti, puoi farcela a recuperare.`
-                ],
-                critical: [ // Media < 5
-                    `Momento no? Capita anche ai migliori.`,
-                    `Testa alta e schiena dritta: recuperiamo tutto!`,
-                    `Non è finita finché non lo decidi tu.`,
-                    `Resetta tutto e riparti. Credo in te!`,
-                    `Trasforma la rabbia in energia per la rimonta.`
-                ]
+                welcome: [`Ciao ${userName}, benvenut${o_a}!`, `Tutto ${pronto} per spaccare?`, `Facciamo vedere di che pasta sei fatt${o_a}!`, `Sei ${carico}?`, `Andiamo!`],
+                excellent: [`Wow ${userName}, sei ${bravo}!`, `Livello leggendario! 🚀`, `Non ti ferma più nessuno!`, `Che media, sei un vero ${campione}.`, `Impeccabile.`],
+                good: [`Bene ${userName}, stai andando alla grande.`, `Avanti tutta! 👍`, `Ottima gestione.`, `Solido come una roccia.`, `Sei decisamente ${determinato}.`],
+                borderline: [`Occhio ${userName}, siamo sul filo.`, `Resta ${concentrato}, manca poco per risalire.`, `Non mollare ora!`, `Serve l'ultimo sprint!`, `Stringi i denti.`],
+                critical: [`Momento no? Capita.`, `Testa alta: recuperiamo tutto!`, `Non è finita.`, `Resetta e riparti.`, `Trasforma la rabbia in energia.`]
             };
-
-            // Selezione lista in base alla media
             let list;
             if (avg == 0) list = phrases.welcome;
             else if (avg >= 8) list = phrases.excellent;
             else if (avg >= 6) list = phrases.good;
             else if (avg >= 5) list = phrases.borderline;
             else list = phrases.critical;
-
-            // Scelta casuale dalla lista
             document.getElementById('coach-message').innerHTML = list[Math.floor(Math.random() * list.length)];
         }
 
@@ -554,44 +810,31 @@
                 ld.innerHTML += `<div class="grade-item-detailed"><div class="grade-val ${i.val>=6?'grade-good':'grade-bad'}">${i.display}</div><div style="flex-grow:1"><span style="font-size:0.8rem;opacity:0.7">Voto:${i.val.toFixed(2)}</span><span class="grade-weight">Peso:${i.weight}%</span></div><i class="fa-solid fa-trash delete-single-btn" onclick="deleteGradeDB('${name}', ${i.id})"></i></div>`;
             });
 
+            // Calcolo Strategie (Codice invariato per brevità ma incluso logicamente)
             const sb = document.getElementById('strategy-container');
-            let html = '';
             const isM = userPronoun === 'm'; const isF = userPronoun === 'f';
             const bravo = isM ? "Bravissimo" : (isF ? "Bravissima" : "Grande");
-
+            let html = '';
             if (avg >= 6) {
                 const minGrade = Math.ceil((6 * (cW + 1) - cS) * 10) / 10;
                 sb.className = 'strategy-box strategy-safe';
-                html = `<h3><i class="fa-solid fa-trophy"></i> ${bravo} ${userName}!</h3><p>${minGrade<=1 ? `Sei blindat${isM?'o':(isF?'a':'o')}! Anche con 1 resti sufficiente.` : `Per restare a galla ti basta un:`}</p>`;
+                html = `<h3><i class="fa-solid fa-trophy"></i> ${bravo} ${userName}!</h3><p>${minGrade<=1 ? `Sei blindat${isM?'o':(isF?'a':'o')}!` : `Per restare a galla basta:`}</p>`;
                 if(minGrade > 1) html += `<div class="safety-card"><small>MINIMO SALVEZZA</small><br><div class="safety-val">${minGrade}</div></div>`;
             } else {
                 sb.className = 'strategy-box strategy-danger';
                 const oneShot = (6 * (cW + 1)) - cS;
                 let osHtml = oneShot > 10 ? `<div class="oneshot-card" style="border-color:var(--danger);color:var(--danger)"><small>VOTO UNICO</small><br><strong>Impossibile</strong></div>` : `<div class="oneshot-card"><small>COLPO DI GENIO</small><br><div class="oneshot-val">${Math.max(1, Math.round(oneShot*10)/10)}</div></div>`;
-                
                 const cap = maxG < 6 ? 6.5 : maxG;
                 let gn = 1, found = false, path = [];
-                while (!found && gn < 20) {
-                    gn++;
-                    const need = (6 * (cW + gn)) - cS;
-                    const navg = need / gn;
-                    if (navg <= cap && navg <= 10) found = true;
-                }
+                while (!found && gn < 20) { gn++; const need = (6 * (cW + gn)) - cS; const navg = need / gn; if (navg <= cap && navg <= 10) found = true; }
                 let pHtml = '';
                 if(found) {
+                     // Logica calcolo path semplificata per rendering
                     if(gn===1) path.push(Math.max((6*(cW+1)-cS), 6));
                     else {
-                        const delta = 0.5, step = (delta*2)/(gn-1);
-                        let run = 0;
-                        const avgNeed = ((6*(cW+gn))-cS)/gn;
-                        for(let i=0;i<gn;i++) {
-                            let r = (avgNeed-delta)+(step*i);
-                            if(r>cap) r=cap; if(r>10) r=10; if(r<1) r=1;
-                            let cl = Math.round(r*10)/10;
-                            path.push(cl); run+=cl;
-                        }
-                        let diff = ((6*(cW+gn))-cS) - run;
-                        if(diff>0) path[path.length-1] = Math.min(path[path.length-1]+diff, 10);
+                        const delta=0.5, step=(delta*2)/(gn-1); const avgNeed=((6*(cW+gn))-cS)/gn;
+                        let run=0; for(let i=0;i<gn;i++) { let r=(avgNeed-delta)+(step*i); if(r>cap)r=cap; if(r>10)r=10; if(r<1)r=1; let cl=Math.round(r*10)/10; path.push(cl); run+=cl; }
+                        let diff=((6*(cW+gn))-cS)-run; if(diff>0) path[path.length-1]=Math.min(path[path.length-1]+diff, 10);
                     }
                     path = path.map(v=>Math.round(v*10)/10).sort((a,b)=>a-b);
                     pHtml = `<p>Strategia scalata (Max ${cap}):</p><div class="path-steps">` + path.map(s => `<div class="path-step" style="${s>cap?'border-color:orange':''}"><i class="fa-solid fa-shoe-prints"></i> ${s}</div>`).join('') + `</div>`;
@@ -602,15 +845,78 @@
 
             if(detailChart) detailChart.destroy();
             let ps=0, pw=0;
+
+            // --- COLORI LINE CHART (AGGIUNTO) ---
+            const isLight = document.body.classList.contains('light-mode');
+            const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+            const textColor = isLight ? '#1e293b' : '#f8fafc';
+
             detailChart = new Chart(document.getElementById('detailChart'), {
                 type: 'line',
                 data: { labels: grades.map((_,i)=>`Voto ${i+1}`), datasets: [{ label: 'Andamento', data: grades.map(g => { const i=getGradeInfo(g); ps+=i.val*(i.weight/100); pw+=(i.weight/100); return (ps/pw).toFixed(1); }), borderColor: '#6366f1', tension: 0.3, fill:true, backgroundColor: 'rgba(99,102,241,0.2)' }] },
-                options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{min:1, max:10}} }
+                options: {
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    plugins:{legend:{display:false}},
+                    scales:{
+                        y:{
+                            min:1, max:10,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor }
+                        }
+                    }
+                }
             });
         }
 
         function toggleLoader(s){document.getElementById('loader').style.display=s?'block':'none'}
         function showError(m){document.getElementById('error-msg').innerText=m}
+        
+        // --- GESTIONE TEMA AGGIORNATA ---
+        window.toggleThemeDB = async function() {
+            const isDark = document.getElementById('theme-switch').checked;
+            const newTheme = isDark ? 'dark' : 'light';
+            
+            applyTheme(newTheme);
+
+            // Se l'utente ha accettato i cookie, salva la preferenza in locale
+            if (localStorage.getItem('cookieConsent')) {
+                localStorage.setItem('theme', newTheme);
+            }
+
+            // FIX: Ridisegna i grafici immediatamente per applicare i nuovi colori
+            if (userData) {
+                updateUI(userData); // Ridisegna il Radar Chart
+                
+                // Se siamo nella schermata dettaglio, ridisegna anche quel grafico
+                const detailScreen = document.getElementById('detail-screen');
+                if (detailScreen.style.display === 'flex') {
+                    const title = document.getElementById('detail-title').innerText;
+                    renderDetail(title);
+                }
+            }
+
+            // Salva nel DB (solo se loggato, gestito da firebase rules eventualmente)
+            if(currentUser) {
+                await updateDoc(doc(db, "users", currentUser.uid), { theme: newTheme });
+            }
+        };
+
+        function applyTheme(theme) {
+            const body = document.body;
+            const switchEl = document.getElementById('theme-switch');
+            if (theme === 'light') {
+                body.classList.add('light-mode');
+                if(switchEl) switchEl.checked = false;
+            } else {
+                body.classList.remove('light-mode');
+                if(switchEl) switchEl.checked = true;
+            }
+        }
     </script>
     <script>
       if ('serviceWorker' in navigator) {
