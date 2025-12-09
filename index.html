@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NeoRegister</title>
     <link rel="icon" href="images/icon-192.png" type="image/png">
     <link rel="manifest" href="manifest.json">
@@ -35,6 +35,8 @@
             margin: 0; padding: 0; min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
             transition: background-color 0.3s ease, color 0.3s ease;
+            /* FIX SCROLL RIMBALZO IOS */
+            overscroll-behavior: none;
         }
 
         #app-screen, #detail-screen, #settings-screen { display: none; width: 100%; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; animation: fadeIn 0.5s ease; }
@@ -44,7 +46,7 @@
             width: 100%; height: 100vh;
             display: flex; justify-content: center; align-items: center;
             position: absolute; top: 0; left: 0; z-index: 100;
-            background: var(--bg-color); /* Ora usa la variabile! */
+            background: var(--bg-color);
             color: var(--text-main);
             transition: background-color 0.3s ease;
         }
@@ -53,7 +55,7 @@
 
         /* --- COOKIE BANNER --- */
         #cookie-banner {
-            display: none; /* Nascosto di default, mostrato via JS */
+            display: none;
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid var(--accent-color);
@@ -91,30 +93,46 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); margin-bottom: 20px; transition: transform 0.2s ease;
         }
 
-        input, select { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; outline: none; transition: 0.3s; font-family: 'Outfit', sans-serif;}
+        /* FIX ZOOM: font-size 16px previene lo zoom su iOS */
+        input, select {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+        }
         input:focus, select:focus { border-color: var(--accent-color); box-shadow: 0 0 10px rgba(99, 102, 241, 0.2); }
-        option { background: #1e293b; color: white; }
+        option { background: #1e293b; color: white; padding: 10px; }
 
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
         .btn-primary { background: linear-gradient(45deg, var(--accent-color), #ec4899); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4); }
         .btn-outline { background: transparent; border: 1px solid var(--accent-color); margin-right: 10px; }
 
-        /* Social & Divider - MIGLIORATO PER CONTRASTO */
+        /* Social & Divider */
         .btn-social {
             width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
             background: white;
             color: #1e293b;
-            border: 1px solid #cbd5e1; /* Bordo grigio per staccare dal bianco */
+            border: 1px solid #cbd5e1;
             padding: 12px; border-radius: 8px;
             cursor: pointer; transition: 0.3s; font-weight: 600; margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Ombra leggera */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             position: relative;
+            font-size: 16px;
         }
         .btn-social:hover {
             background: #f8fafc;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Ombra più marcata all'hover */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border-color: #94a3b8;
         }
         
@@ -173,6 +191,34 @@
         .chart-container { position: relative; height: 350px; width: 100%; }
         #loader { display: none; margin-top: 10px; color: var(--accent-color); }
         
+        /* --- NUOVI STILI PER IL VOTE SELECTOR --- */
+        .vote-selector-wrapper {
+            display: flex; gap: 10px; align-items: stretch; margin-bottom: 10px; flex-wrap: wrap;
+        }
+        .vote-stepper {
+            display: flex; align-items: center;
+            background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+            border-radius: 8px; overflow: hidden; flex: 1; min-width: 120px;
+        }
+        .btn-step {
+            background: none; border: none; color: white; padding: 12px;
+            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+        }
+        .btn-step:hover { background: rgba(255,255,255,0.1); }
+        .vote-display { flex-grow: 1; text-align: center; font-size: 1.5rem; font-weight: bold; }
+        
+        .vote-modifiers {
+            display: flex; gap: 5px; flex: 2; min-width: 200px;
+        }
+        .btn-mod {
+            flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+            color: white; border-radius: 8px; cursor: pointer; font-weight: bold;
+            transition: 0.2s; padding: 10px 0; font-size: 14px;
+        }
+        .btn-mod:hover { border-color: var(--accent-color); }
+        .btn-mod.active { background: var(--accent-color); border-color: var(--accent-color); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
+        .btn-mod:disabled { opacity: 0.3; cursor: not-allowed; border-color: transparent; }
+
         /* --- TEMA CHIARO (Light Mode) MIGLIORATO --- */
         body.light-mode {
             --bg-color: #e2e8f0;
@@ -187,7 +233,6 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
-        /* MENU TENDINA CHIARO */
         body.light-mode .dropdown-content {
             background: white !important;
             border: 1px solid rgba(0,0,0,0.1);
@@ -201,10 +246,8 @@
             border-color: rgba(0,0,0,0.1);
         }
 
-        /* MENTAL COACH TESTO CHIARO */
         body.light-mode .coach-text { color: #334155 !important; font-weight: 500; }
 
-        /* INPUT E SELECT CHIARO */
         body.light-mode input, body.light-mode select {
             background: #f1f5f9 !important;
             color: #0f172a !important;
@@ -217,75 +260,38 @@
         }
         body.light-mode option { background: white; color: black; }
 
-        /* --- FIX RICHIESTI --- */
+        /* FIX VISIVI TEMA CHIARO VOTE SELECTOR */
+        body.light-mode .vote-stepper { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+        body.light-mode .btn-step { color: #0f172a; }
+        body.light-mode .btn-step:hover { background: rgba(0,0,0,0.05); }
+        body.light-mode .btn-mod { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+        body.light-mode .btn-mod:hover { border-color: var(--accent-color); }
+        body.light-mode .btn-mod.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        body.light-mode .btn-mod:disabled { opacity: 0.3; background: #e2e8f0; }
 
-        /* 1. SEPARAZIONE MATERIE */
         body.light-mode .subject-card,
         body.light-mode .grade-item-detailed {
             background: white !important;
             border: 1px solid #cbd5e1;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        body.light-mode .subject-card:hover {
-            background: #f8fafc !important;
-        }
+        body.light-mode .subject-card:hover { background: #f8fafc !important; }
 
-        /* 2. BOTTONE "ELIMINA ACCOUNT" ROSSO */
-        body.light-mode .btn[style*="--danger"] {
-            color: #ef4444 !important;
-            border-color: #ef4444 !important;
-        }
-        body.light-mode .btn[style*="--danger"]:hover {
-            background: #ef4444 !important;
-            color: white !important;
-        }
+        body.light-mode .btn[style*="--danger"] { color: #ef4444 !important; border-color: #ef4444 !important; }
+        body.light-mode .btn[style*="--danger"]:hover { background: #ef4444 !important; color: white !important; }
 
-        /* 3. ALTRI BOTTONI OUTLINE */
-        body.light-mode .btn-outline:not([style*="--danger"]) {
-            border-color: var(--accent-color) !important;
-            color: var(--accent-color) !important;
-        }
-        body.light-mode .btn-outline:not([style*="--danger"]):hover {
-            background: var(--accent-color) !important;
-            color: white !important;
-        }
+        body.light-mode .btn-outline:not([style*="--danger"]) { border-color: var(--accent-color) !important; color: var(--accent-color) !important; }
+        body.light-mode .btn-outline:not([style*="--danger"]):hover { background: var(--accent-color) !important; color: white !important; }
 
-        /* Tasti "Torna Indietro" neri */
-        body.light-mode .btn[style*="background:none"],
-        body.light-mode .btn[style*="background: none"] {
-            color: #0f172a !important;
-        }
+        body.light-mode .btn[style*="background:none"], body.light-mode .btn[style*="background: none"] { color: #0f172a !important; }
 
-        /* 4. FIX CONTRASTO STRATEGIE */
-        body.light-mode .strategy-safe {
-            color: #166534 !important; /* Verde Scuro Bosco */
-            background: rgba(22, 101, 52, 0.1) !important;
-            border-color: #166534 !important;
-        }
-        body.light-mode .strategy-danger {
-            color: #991b1b !important; /* Rosso Scuro Sangue */
-            background: rgba(153, 27, 27, 0.1) !important;
-            border-color: #991b1b !important;
-        }
+        body.light-mode .strategy-safe { color: #166534 !important; background: rgba(22, 101, 52, 0.1) !important; border-color: #166534 !important; }
+        body.light-mode .strategy-danger { color: #991b1b !important; background: rgba(153, 27, 27, 0.1) !important; border-color: #991b1b !important; }
         
-        body.light-mode .safety-card {
-            color: #15803d !important;
-            border-color: #15803d !important;
-            background: rgba(21, 128, 61, 0.1);
-        }
-        body.light-mode .oneshot-card {
-            color: #b45309 !important; /* Oro scuro leggibile */
-            border-color: #b45309 !important;
-            background: rgba(180, 83, 9, 0.1);
-        }
-        body.light-mode .path-step {
-            color: #0f172a !important;
-            background: white !important;
-            border-color: #cbd5e1 !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+        body.light-mode .safety-card { color: #15803d !important; border-color: #15803d !important; background: rgba(21, 128, 61, 0.1); }
+        body.light-mode .oneshot-card { color: #b45309 !important; border-color: #b45309 !important; background: rgba(180, 83, 9, 0.1); }
+        body.light-mode .path-step { color: #0f172a !important; background: white !important; border-color: #cbd5e1 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* SWITCH CSS */
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -393,11 +399,25 @@
                 <div class="card">
                     <h3>Registra Voto</h3>
                     <select id="input-subject"><option value="">Caricamento...</option></select>
-                    <label style="font-size:0.8rem; color:var(--text-muted);">Voto (Min 1 - Max 10)</label>
-                    <input type="text" id="input-grade" placeholder="Es. 7, 7+, 6.5">
-                    <label style="font-size:0.8rem; color:var(--text-muted);">Peso % (Min 1% - Max 100%)</label>
+                    <label style="font-size:0.8rem; color:var(--text-muted);">Voto</label>
+                    
+                    <div class="vote-selector-wrapper">
+                        <div class="vote-stepper">
+                            <button class="btn-step" onclick="updateInt('dash', -1)">-</button>
+                            <span id="dash-vote-val" class="vote-display">6</span>
+                            <button class="btn-step" onclick="updateInt('dash', 1)">+</button>
+                        </div>
+                        <div class="vote-modifiers">
+                            <button class="btn-mod active" id="dash-mod-none" onclick="setMod('dash', 'none')">Int</button>
+                            <button class="btn-mod" id="dash-mod-plus" onclick="setMod('dash', 'plus')">+</button>
+                            <button class="btn-mod" id="dash-mod-minus" onclick="setMod('dash', 'minus')">-</button>
+                            <button class="btn-mod" id="dash-mod-half" onclick="setMod('dash', 'half')">½</button>
+                        </div>
+                    </div>
+
+                    <label style="font-size:0.8rem; color:var(--text-muted);">Peso %</label>
                     <div style="display:flex; align-items:center; gap:5px; margin-bottom:15px;">
-                        <input type="number" id="input-weight" value="100" min="1" max="100" style="margin-bottom:0;">
+                        <input type="number" id="input-weight" value="100" min="0" max="100" style="margin-bottom:0;">
                         <span>%</span>
                     </div>
                     <button class="btn btn-primary" onclick="addGradeDB()">Salva Voto</button>
@@ -427,6 +447,35 @@
                 </div>
             </div>
             <div id="strategy-container"></div>
+            
+            <div class="card" style="border: 1px solid var(--accent-color);">
+                <h3><i class="fa-solid fa-plus-circle"></i> Aggiungi Voto</h3>
+                
+                <div class="vote-selector-wrapper">
+                    <div class="vote-stepper">
+                        <button class="btn-step" onclick="updateInt('det', -1)">-</button>
+                        <span id="det-vote-val" class="vote-display">6</span>
+                        <button class="btn-step" onclick="updateInt('det', 1)">+</button>
+                    </div>
+                    <div class="vote-modifiers">
+                        <button class="btn-mod active" id="det-mod-none" onclick="setMod('det', 'none')">Int</button>
+                        <button class="btn-mod" id="det-mod-plus" onclick="setMod('det', 'plus')">+</button>
+                        <button class="btn-mod" id="det-mod-minus" onclick="setMod('det', 'minus')">-</button>
+                        <button class="btn-mod" id="det-mod-half" onclick="setMod('det', 'half')">½</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top:10px;">
+                    <div style="display:flex; align-items:center; gap:5px; width: 100px;">
+                        <input type="number" id="detail-input-weight" value="100" min="0" max="100" style="margin:0;">
+                        <span>%</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: auto;" onclick="addGradeFromDetail()">
+                        <i class="fa-solid fa-save"></i> Salva
+                    </button>
+                </div>
+            </div>
+
             <div class="card">
                 <h3>Registro Voti</h3>
                 <div id="detail-grades-list" style="display:flex; flex-direction:column; gap:5px;"></div>
@@ -451,6 +500,17 @@
                 <h1><i class="fa-solid fa-sliders"></i> Impostazioni</h1>
                 <p style="color:var(--text-muted)">Gestisci il tuo account e le preferenze di NeoRegister.</p>
             </div>
+            
+            <div class="card">
+                <h3>Valore dei simboli (+ / -)</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Scegli quanto vale un "più" o un "meno" sui voti.</p>
+                <select id="grade-step-input" onchange="updateGradeStepDB()">
+                    <option value="0.20">0.20 (Standard)</option>
+                    <option value="0.25">0.25 (Quarti di punto)</option>
+                    <option value="0.30">0.30 (Alto)</option>
+                </select>
+            </div>
+
             <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
                 <div>
                     <h3 style="margin:0;"><i class="fa-solid fa-moon"></i> Tema Scuro</h3>
@@ -490,9 +550,16 @@
         let userData = {};
         let userName = "Studente";
         let userPronoun = "m";
+        let userGradeStep = 0.20; // DEFAULT
         let myChart = null;
         let detailChart = null;
         let isRegisterMode = false;
+
+        // VOTE SELECTOR STATE
+        let voteState = {
+            dash: { int: 6, mod: 'none' },
+            det: { int: 6, mod: 'none' }
+        };
 
         // --- EXPORT GLOBALS ---
         window.openSettings = () => { switchScreen('settings'); document.getElementById("myDropdown").classList.remove('show'); };
@@ -509,22 +576,23 @@
         window.deleteGradeDB = deleteGradeDB;
         window.deleteCurrentSubject = deleteCurrentSubject;
         window.closeDetail = closeDetail;
+        window.addGradeFromDetail = addGradeFromDetail;
+        window.updateGradeStepDB = updateGradeStepDB;
+        window.updateInt = updateInt;
+        window.setMod = setMod;
 
-        // --- COOKIE & THEME LOGIC EXPORTS ---
         window.handleCookieConsent = (accepted) => {
             document.getElementById('cookie-banner').style.display = 'none';
             if (accepted) {
                 localStorage.setItem('cookieConsent', 'true');
-                // Se c'è già un tema attivo, salvalo ora
                 const isLight = document.body.classList.contains('light-mode');
                 localStorage.setItem('theme', isLight ? 'light' : 'dark');
             } else {
                 localStorage.removeItem('cookieConsent');
-                localStorage.removeItem('theme'); // Rimuovi per rispetto privacy
+                localStorage.removeItem('theme');
             }
         };
 
-        /* --- INIT COOKIES --- */
         document.addEventListener('DOMContentLoaded', () => {
             const consent = localStorage.getItem('cookieConsent');
             if (!consent) {
@@ -532,7 +600,6 @@
             }
         });
 
-        /* --- AUTH SOCIAL & SETUP --- */
         async function handleSocialLogin(provider) {
             toggleLoader(true);
             try {
@@ -546,6 +613,7 @@
                     await setDoc(userRef, {
                         username: user.displayName.split(' ')[0] || "Studente",
                         pronoun: null,
+                        gradeStep: 0.20,
                         subjects: defaultSubjects
                     });
                 }
@@ -560,15 +628,76 @@
             document.getElementById('setup-modal').style.display = 'none';
         }
 
-        /* --- PARSING & AUTH CLASSIC --- */
-        function parseGradeInput(input) {
-            let str = input.toString().replace(',', '.').trim();
-            let val = parseFloat(str);
-            let display = str;
-            if (isNaN(val)) return null;
-            if (str.endsWith('+')) val = parseFloat(str) + 0.20;
-            else if (str.endsWith('-')) val = parseFloat(str) - 0.20;
-            return { numeric: val, display: display };
+        // --- NEW VOTE LOGIC (LIMIT FIX & RESET) ---
+        function updateInt(ctx, change) {
+            let newVal = voteState[ctx].int + change;
+            if (newVal < 1) newVal = 1;
+            if (newVal > 10) newVal = 10;
+
+            // RESET LOGIC
+            if (newVal === 10 && (voteState[ctx].mod === 'plus' || voteState[ctx].mod === 'half')) {
+                setMod(ctx, 'none');
+            }
+            if (newVal === 1 && voteState[ctx].mod === 'minus') {
+                setMod(ctx, 'none');
+            }
+
+            voteState[ctx].int = newVal;
+            document.getElementById(`${ctx}-vote-val`).innerText = newVal;
+            updateModButtons(ctx);
+        }
+
+        function setMod(ctx, mod) {
+            const currentInt = voteState[ctx].int;
+            if (currentInt === 10 && (mod === 'plus' || mod === 'half')) return;
+            if (currentInt === 1 && mod === 'minus') return;
+
+            voteState[ctx].mod = mod;
+            updateModButtons(ctx);
+        }
+
+        function updateModButtons(ctx) {
+            const mods = ['none', 'plus', 'minus', 'half'];
+            const currentInt = voteState[ctx].int;
+            
+            mods.forEach(m => {
+                const btn = document.getElementById(`${ctx}-mod-${m}`);
+                btn.classList.remove('active');
+                btn.disabled = false;
+
+                if (currentInt === 10 && (m === 'plus' || m === 'half')) btn.disabled = true;
+                if (currentInt === 1 && m === 'minus') btn.disabled = true;
+
+                if (voteState[ctx].mod === m) btn.classList.add('active');
+            });
+        }
+
+        function calculateVoteValue(ctx) {
+            const v = voteState[ctx];
+            let num = v.int;
+            let display = v.int.toString();
+
+            if (v.mod === 'plus') {
+                num += userGradeStep;
+                display += "+";
+            } else if (v.mod === 'minus') {
+                num -= userGradeStep;
+                display += "-";
+            } else if (v.mod === 'half') {
+                num += 0.5;
+                display += "½";
+            }
+            return { numeric: num, display: display };
+        }
+
+        // --- UPDATE STEP IN DB ---
+        async function updateGradeStepDB() {
+            const val = parseFloat(document.getElementById('grade-step-input').value);
+            if(isNaN(val) || val < 0) return alert("Valore non valido");
+            userGradeStep = val;
+            if(currentUser) {
+                await updateDoc(doc(db, "users", currentUser.uid), { gradeStep: val });
+            }
         }
 
         function toggleAuthMode() {
@@ -584,7 +713,7 @@
                 link.innerText = "Hai già un account? Accedi";
                 nameField.classList.add('show-name-field');
             } else {
-                title.innerText = "Bentornato!";
+                title.innerText = "Accedi al tuo account";
                 btn.innerText = "Accedi";
                 link.innerText = "Non hai un account? Registrati";
                 nameField.classList.remove('show-name-field');
@@ -602,14 +731,13 @@
                     if(!name) throw new Error("Inserisci il tuo nome!");
                     const cred = await createUserWithEmailAndPassword(auth, email, pass);
                     const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motoria": [] };
-                    await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, subjects: defaultSubjects });
+                    await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, gradeStep: 0.20, subjects: defaultSubjects });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
             } catch(err) { showError(err.message); toggleLoader(false); }
         }
 
-        /* --- LOGIC --- */
         function toggleMenu() { document.getElementById("myDropdown").classList.toggle("show"); }
         window.onclick = function(e) { if (!e.target.matches('.menu-btn') && !e.target.matches('.menu-btn *')) { document.getElementById("myDropdown").classList.remove('show'); } }
         async function deleteMyAccount() {
@@ -633,7 +761,10 @@
                     userData = data.subjects || {};
                     userName = data.username || "Studente";
                     
-                    // Se non abbiamo un salvataggio locale, usiamo quello del DB, altrimenti quello locale vince (per l'avvio)
+                    // CARICA IL VALORE PERSONALIZZATO
+                    userGradeStep = data.gradeStep !== undefined ? data.gradeStep : 0.20;
+                    document.getElementById('grade-step-input').value = parseFloat(userGradeStep).toFixed(2);
+
                     const localTheme = localStorage.getItem('theme');
                     const savedTheme = localTheme || data.theme || 'dark';
                     applyTheme(savedTheme);
@@ -664,23 +795,54 @@
             await updateDoc(doc(db,"users",currentUser.uid), {subjects: userData});
             document.getElementById('new-subject-name').value = '';
         }
+        
         async function addGradeDB() {
             const s = document.getElementById('input-subject').value;
-            const inputVal = document.getElementById('input-grade').value;
             const w = parseFloat(document.getElementById('input-weight').value);
-            if(!s || !inputVal || isNaN(w)) return alert("Dati errati");
-            if (w < 1 || w > 100) return alert("Peso 1-100%");
-            const parsed = parseGradeInput(inputVal);
-            if(!parsed || parsed.numeric < 1 || parsed.numeric > 10) return alert("Voto 1-10");
+            
+            if(!s) return alert("Seleziona una materia");
+            if (isNaN(w) || w < 0 || w > 100) return alert("Peso 0-100%");
+            
+            const parsed = calculateVoteValue('dash');
+            
             userData[s].push({ val: parsed.numeric, display: parsed.display, weight: w, id: Date.now() });
             await updateDoc(doc(db,"users",currentUser.uid), {subjects: userData});
-            document.getElementById('input-grade').value = '';
+            
+            // RESET
+            voteState['dash'].int = 6;
+            document.getElementById('dash-vote-val').innerText = '6';
+            setMod('dash', 'none');
+            updateModButtons('dash');
             document.getElementById('input-weight').value = '100';
         }
+
+        async function addGradeFromDetail() {
+            const subject = document.getElementById('detail-title').innerText;
+            const w = parseFloat(document.getElementById('detail-input-weight').value);
+
+            if (isNaN(w) || w < 0 || w > 100) return alert("Peso 0-100%");
+            
+            const parsed = calculateVoteValue('det');
+
+            userData[subject].push({ val: parsed.numeric, display: parsed.display, weight: w, id: Date.now() });
+            await updateDoc(doc(db, "users", currentUser.uid), { subjects: userData });
+            
+            // RESET
+            voteState['det'].int = 6;
+            document.getElementById('det-vote-val').innerText = '6';
+            setMod('det', 'none');
+            updateModButtons('det');
+            document.getElementById('detail-input-weight').value = '100';
+        }
+
         async function deleteGradeDB(s, id) { if(confirm("Eliminare?")) { userData[s] = userData[s].filter(g => (g.id||g)!=id); await updateDoc(doc(db,"users",currentUser.uid), {subjects:userData}); } }
         async function deleteCurrentSubject() { const n = document.getElementById('detail-title').innerText; if(confirm("Eliminare "+n+"?")) { delete userData[n]; await updateDoc(doc(db,"users",currentUser.uid), {subjects:userData}); closeDetail(); } }
 
-        function getGradeInfo(g) { if (typeof g === 'number') return { val: g, display: g, weight: 100, id: g }; return { val: g.val, display: g.display || g.val, weight: g.weight || 100, id: g.id }; }
+        function getGradeInfo(g) {
+            // FIX PESO 0
+            if (typeof g === 'number') return { val: g, display: g, weight: 100, id: g };
+            return { val: g.val, display: g.display || g.val, weight: (g.weight !== undefined ? g.weight : 100), id: g.id };
+        }
         function calculateWeightedAvg(grades) { if (!grades.length) return 0; let s=0, tw=0; grades.forEach(g => { const i=getGradeInfo(g); s+=i.val*(i.weight/100); tw+=(i.weight/100); }); return tw===0?0:(s/tw); }
         
         function switchScreen(name) {
@@ -690,7 +852,6 @@
         window.openDetail = (name) => { switchScreen('detail'); renderDetail(name); };
         function closeDetail() { switchScreen('app'); }
 
-        /* --- UPDATE UI & CHARTS (MODIFICATO PER LIGHT MODE) --- */
         function updateUI(subjects) {
             const cont = document.getElementById('subjects-container');
             const sel = document.getElementById('input-subject');
@@ -700,7 +861,10 @@
             let gs=0, gc=0, gi=0;
             const l=[], d=[];
 
-            for (const [n, g] of Object.entries(subjects)) {
+            // SORTING LOGIC ADDED HERE
+            const sortedSubjects = Object.entries(subjects).sort((a, b) => a[0].localeCompare(b[0]));
+
+            for (const [n, g] of sortedSubjects) {
                 const opt = document.createElement('option'); opt.value = n; opt.innerText = n; sel.appendChild(opt);
                 const avg = calculateWeightedAvg(g);
                 if(g.length) { gs+=avg; gc++; gi+=g.length; }
@@ -720,11 +884,10 @@
 
             if(myChart) myChart.destroy();
 
-            // --- COLORI RADAR CHART ---
             const isLight = document.body.classList.contains('light-mode');
             const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
             const textColor = isLight ? '#1e293b' : '#f8fafc';
-            const backdrop = isLight ? 'rgba(255, 255, 255, 0.6)' : 'transparent'; // Sfondo etichette
+            const backdrop = isLight ? 'rgba(255, 255, 255, 0.6)' : 'transparent';
             const pointColor = isLight ? '#6366f1' : '#fff';
 
             myChart = new Chart(document.getElementById('gradeChart'), {
@@ -753,11 +916,11 @@
                             pointLabels: {
                                 color: textColor,
                                 font: {size: 12, weight: 'bold'},
-                                backdropColor: backdrop, // Importante per leggibilità
+                                backdropColor: backdrop,
                                 borderRadius: 4
                             },
                             ticks: {
-                                backdropColor: 'transparent', // Tolto backdrop dai numeri
+                                backdropColor: 'transparent',
                                 color: isLight ? '#64748b' : '#94a3b8',
                                 stepSize: 1,
                                 callback: v => (v===6||v===10)?v:''
@@ -853,9 +1016,19 @@
 
             detailChart = new Chart(document.getElementById('detailChart'), {
                 type: 'line',
-                data: { labels: grades.map((_,i)=>`Voto ${i+1}`), datasets: [{ label: 'Andamento', data: grades.map(g => { const i=getGradeInfo(g); ps+=i.val*(i.weight/100); pw+=(i.weight/100); return (ps/pw).toFixed(1); }), borderColor: '#6366f1', tension: 0.3, fill:true, backgroundColor: 'rgba(99,102,241,0.2)' }] },
+                data: {
+                    labels: grades.map((_,i)=>`Voto ${i+1}`),
+                    datasets: [{
+                        label: 'Voti', // Changed label to reflect raw grades
+                        data: grades.map(g => getGradeInfo(g).val), // Just the grade value
+                        borderColor: '#6366f1',
+                        tension: 0.3,
+                        fill: true,
+                        backgroundColor: 'rgba(99,102,241,0.2)'
+                    }]
+                },
                 options: {
-                    responsive:true,
+                    responsive:true, 
                     maintainAspectRatio:false,
                     plugins:{legend:{display:false}},
                     scales:{
