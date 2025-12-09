@@ -1,6 +1,6 @@
 # 🎓 NeoRegister - Il Tuo Registro Futuristico
 
-![Version](https://img.shields.io/badge/version-28.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Status](https://img.shields.io/badge/status-active-success)
+![Version](https://img.shields.io/badge/version-29.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Status](https://img.shields.io/badge/status-active-success)
 
 **NeoRegister** è una Single Page Application (SPA) moderna e intelligente per gestire i tuoi voti scolastici. Non è solo un registro, è un vero e proprio assistente che ti aiuta a pianificare le tue strategie di studio con l'aiuto dell'Intelligenza Artificiale.
 
