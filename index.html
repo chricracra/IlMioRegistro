@@ -36,6 +36,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --gold: #fbbf24;
+            --step-bg: rgba(255, 255, 255, 0.05); /* Sfondo step default */
         }
 
         body {
@@ -48,7 +49,7 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             overscroll-behavior: none;
             
-            /* AGGIUNTA FONDAMENTALE PER IL FIX */
+            /* FIX SCROLL ORIZZONTALE */
             overflow-x: hidden;
             width: 100%;
             position: relative;
@@ -68,7 +69,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- TOAST NOTIFICATIONS (Modificato per visibilità) --- */
+        /* --- TOAST NOTIFICATIONS --- */
         #toast-container {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             z-index: 5000; display: flex; flex-direction: column; gap: 10px; align-items: center;
@@ -85,7 +86,6 @@
             pointer-events: auto;
             font-weight: 500;
         }
-        /* Stili Dark Mode Default */
         .toast.error { border-color: var(--danger); color: #fca5a5; }
         .toast.success { border-color: var(--success); color: #86efac; }
         
@@ -117,6 +117,39 @@
             box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
         }
 
+        /* --- INSTALL GUIDE MODAL --- */
+        #install-modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 3000;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+        .install-box {
+            background: var(--bg-color); /* ADATTIVO */
+            color: var(--text-main);     /* ADATTIVO */
+            border: 1px solid var(--accent-color);
+            padding: 30px; border-radius: 20px;
+            width: 90%; max-width: 450px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+            position: relative;
+        }
+        /* Classi dinamiche per il contenuto JS */
+        .install-main-icon { font-size: 3.5rem; margin-bottom: 15px; color: var(--text-main); }
+        .install-title { margin: 0 0 10px 0; color: var(--text-main); }
+        .install-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+        .install-steps-container { text-align: left; background: var(--step-bg); padding: 15px; border-radius: 12px; margin-top: 15px; color: var(--text-main); font-size: 0.95rem; }
+        .install-step-row { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .install-step-row i { color: var(--accent-color); font-size: 1.2rem; min-width: 20px; text-align: center; }
+
+        .close-modal-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.2rem; cursor: pointer;
+        }
+
         .container { width: 100%; max-width: 1200px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
         @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
 
@@ -141,7 +174,6 @@
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         .btn-outline { background: transparent; border: 1px solid var(--accent-color); margin-right: 10px; }
 
-        /* Social & Divider */
         .btn-social {
             width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
             background: white; color: #1e293b; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px;
@@ -156,7 +188,6 @@
 
         .auth-switch { margin-top: 15px; color: var(--text-muted); font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
        
-        /* Campo Nome Nascosto */
         #register-name-field { overflow: hidden; transition: max-height 0.4s ease-in-out; max-height: 0; }
         .show-name-field { max-height: 60px !important; margin-bottom: 10px; }
 
@@ -165,7 +196,6 @@
         .dropdown-content { display: none; position: absolute; right: 0; top: 50px; background: #1e293b; min-width: 200px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--glass-border); z-index: 10; overflow: hidden; }
         .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: block; cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .dropdown-content a:hover { background-color: rgba(255,255,255,0.05); }
-        .dropdown-danger:hover { background-color: rgba(239, 68, 68, 0.2) !important; color: var(--danger) !important; }
         .show { display: block; }
 
         .subject-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-color); margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
@@ -182,7 +212,6 @@
         .strategy-safe { border-color: var(--success); color: #86efac; background: rgba(16, 185, 129, 0.1); }
         .strategy-danger { border-color: var(--danger); color: #fca5a5; background: rgba(239, 68, 68, 0.1); }
        
-        /* --- PATH STYLES --- */
         .path-container { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
         .path-steps { display: flex; align-items: center; gap: 5px; overflow-x: auto; max-width: 100%; padding: 10px 0; }
         .path-step-card {
@@ -193,23 +222,14 @@
         }
         .path-step-val { font-size: 1.3rem; font-weight: bold; }
         .path-arrow { color: var(--text-muted); font-size: 0.8rem; margin: 0 5px; }
-       
-        /* STILI ICONE STEP */
         .path-icon { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px; opacity: 0.8; }
         .step-hard .path-icon { color: var(--warning); }
         .step-easy .path-icon { color: var(--success); }
         .step-extreme .path-icon { color: var(--danger); }
-       
         .step-hard { border-color: var(--warning); color: var(--warning); }
         .step-easy { border-color: var(--success); color: var(--success); }
         .step-extreme { border-color: var(--danger); color: var(--danger); }
 
-        .strategy-divider { display: flex; align-items: center; margin: 20px 0; color: var(--text-muted); font-size: 0.8rem; letter-spacing: 1px; }
-        .strategy-divider::before, .strategy-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--glass-border); }
-        .strategy-divider span { padding: 0 10px; }
-
-        .oneshot-card { background: linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1)); border: 1px solid rgba(251, 191, 36, 0.3); padding: 15px; border-radius: 10px; text-align: center; color: var(--gold); }
-        .oneshot-val { font-size: 2rem; font-weight: bold; margin: 5px 0; }
         .safety-card { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 15px; border-radius: 10px; text-align: center; color: var(--success); margin-top: 10px; }
         .safety-val { font-size: 2rem; font-weight: bold; margin: 5px 0; }
 
@@ -224,7 +244,6 @@
         .chart-container { position: relative; height: 350px; width: 100%; }
         #loader { display: none; margin-top: 10px; color: var(--accent-color); }
        
-        /* VOTE SELECTOR */
         .vote-selector-wrapper { display: flex; gap: 10px; align-items: stretch; margin-bottom: 10px; flex-wrap: wrap; }
         .vote-stepper { display: flex; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden; flex: 1; min-width: 120px; }
         .btn-step { background: none; border: none; color: white; padding: 12px; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
@@ -236,47 +255,39 @@
         .btn-mod.active { background: var(--accent-color); border-color: var(--accent-color); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
         .btn-mod:disabled { opacity: 0.3; cursor: not-allowed; border-color: transparent; }
        
-        /* PERIOD FILTER STYLES */
         .period-selector {
-            margin-top: 20px;
-            padding: 15px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 1200px;
-            box-sizing: border-box;
-            display: block; /* Modificato da flex a block per stacking */
+            margin-top: 20px; padding: 15px; background: var(--glass-bg);
+            border: 1px solid var(--glass-border); border-radius: 12px; width: 100%;
+            max-width: 1200px; box-sizing: border-box; display: block;
         }
 
-        /* --- TEMA CHIARO (Light Mode) --- */
+        /* --- TEMA CHIARO --- */
         body.light-mode {
             --bg-color: #e2e8f0;
             --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(255, 255, 255, 1);
             --text-main: #0f172a;
             --text-muted: #475569;
+            --step-bg: rgba(0, 0, 0, 0.05); /* Sfondo step chiaro */
             background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.2) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 40%);
         }
-
-        /* FIX LOGIN CHIARO (Forzato) */
-        body.light-mode #login-screen {
-            background-color: #e2e8f0 !important;
-            color: #0f172a !important;
-        }
-
+        body.light-mode #login-screen { background-color: #e2e8f0 !important; color: #0f172a !important; }
         body.light-mode .card { box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); }
+        
+        /* FIX INSTALL MODAL LIGHT MODE */
+        body.light-mode .install-box { background: #ffffff !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; color: #0f172a !important; }
+        body.light-mode .install-steps-container { background: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #e2e8f0; }
+        body.light-mode .install-main-icon { color: #0f172a !important; } /* Icona principale scura */
+        
         body.light-mode .dropdown-content { background: white !important; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
         body.light-mode .dropdown-content a { color: #0f172a; }
         body.light-mode .dropdown-content a:hover { background-color: #f1f5f9; }
         body.light-mode .menu-btn { background: rgba(255,255,255,0.5); color: #0f172a; border-color: rgba(0,0,0,0.1); }
         body.light-mode .coach-text { color: #334155 !important; font-weight: 500; }
         body.light-mode #cookie-banner { background: rgba(255, 255, 255, 0.95); border-top: 1px solid #cbd5e1; color: #0f172a; }
-
         body.light-mode input, body.light-mode select { background: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         body.light-mode input:focus, body.light-mode select:focus { background: #fff !important; border-color: var(--accent-color) !important; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
         body.light-mode option { background: white; color: black; }
-
         body.light-mode .vote-stepper { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
         body.light-mode .btn-step { color: #0f172a; }
         body.light-mode .btn-step:hover { background: rgba(0,0,0,0.05); }
@@ -284,71 +295,24 @@
         body.light-mode .btn-mod:hover { border-color: var(--accent-color); }
         body.light-mode .btn-mod.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         body.light-mode .btn-mod:disabled { opacity: 0.3; background: #e2e8f0; }
-
-        body.light-mode .subject-card,
-        body.light-mode .grade-item-detailed { background: white !important; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        body.light-mode .subject-card, body.light-mode .grade-item-detailed { background: white !important; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         body.light-mode .subject-card:hover { background: #f8fafc !important; }
-
         body.light-mode .btn[style*="--danger"] { color: #ef4444 !important; border-color: #ef4444 !important; }
         body.light-mode .btn[style*="--danger"]:hover { background: #ef4444 !important; color: white !important; }
-
         body.light-mode .btn-outline:not([style*="--danger"]) { border-color: var(--accent-color) !important; color: var(--accent-color) !important; }
         body.light-mode .btn-outline:not([style*="--danger"]):hover { background: var(--accent-color) !important; color: white !important; }
         body.light-mode .btn[style*="background:none"], body.light-mode .btn[style*="background: none"] { color: #0f172a !important; }
-
-        /* FIX COLORI STRATEGIA LIGHT MODE (Nuovi e puliti) */
-        /* Sovrascrive il box grigio generico */
-        body.light-mode .strategy-box {
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            color: #0f172a !important;
-        }
-
-        body.light-mode .strategy-safe {
-            color: #15803d !important;
-            background: #ffffff !important;
-            border: 1px solid #22c55e !important;
-        }
-        body.light-mode .strategy-danger {
-            color: #b91c1c !important;
-            background: #ffffff !important;
-            border: 1px solid #ef4444 !important;
-            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.1);
-        }
-       
+        body.light-mode .strategy-box { background: #ffffff !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); color: #0f172a !important; }
+        body.light-mode .strategy-safe { color: #15803d !important; background: #ffffff !important; border: 1px solid #22c55e !important; }
+        body.light-mode .strategy-danger { color: #b91c1c !important; background: #ffffff !important; border: 1px solid #ef4444 !important; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.1); }
         body.light-mode .safety-card { color: #15803d !important; border-color: #15803d !important; background: rgba(22, 163, 74, 0.1); }
-        body.light-mode .oneshot-card { color: #c2410c !important; border-color: #f97316 !important; background: rgba(255, 237, 213, 0.5); }
-       
-        /* PATH STYLE LIGHT */
-        body.light-mode .path-step-card {
-            background: white !important;
-            border: 1px solid #cbd5e1 !important;
-            color: #0f172a;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
-        }
+        body.light-mode .path-step-card { background: white !important; border: 1px solid #cbd5e1 !important; color: #0f172a; box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important; }
         body.light-mode .path-arrow { color: #94a3b8; }
-       
-        /* Select dentro box strategia light mode */
         body.light-mode #recovery-count { color: #0f172a !important; border-bottom: 1px solid #cbd5e1 !important; }
         body.light-mode #recovery-count option { background: white; color: black; }
-
-        body.light-mode .period-selector {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-        }
-       
-        /* TOAST LIGHT MODE FIX */
-        body.light-mode .toast.success {
-            background-color: #d1fae5 !important; /* Verde chiaro */
-            color: #065f46 !important; /* Verde scuro */
-            border-color: #10b981 !important;
-        }
-        body.light-mode .toast.error {
-            background-color: #fee2e2 !important; /* Rosso chiaro */
-            color: #991b1b !important; /* Rosso scuro */
-            border-color: #ef4444 !important;
-        }
+        body.light-mode .period-selector { background: #ffffff !important; border-color: #cbd5e1 !important; }
+        body.light-mode .toast.success { background-color: #d1fae5 !important; color: #065f46 !important; border-color: #10b981 !important; }
+        body.light-mode .toast.error { background-color: #fee2e2 !important; color: #991b1b !important; border-color: #ef4444 !important; }
 
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -357,7 +321,7 @@
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* --- STILE TUTORIAL MIGLIORATO (Driver.js Custom) --- */
+        /* --- STILE TUTORIAL MIGLIORATO (FIX ZOOM & MOBILE) --- */
         .driver-popover.driverjs-theme {
             background-color: #1e293b;
             color: white;
@@ -365,124 +329,42 @@
             border-radius: 12px;
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
             padding: 15px;
-
-            /* MODIFICHE FIX MOBILE */
-            width: 90vw !important;       /* Occupa il 90% della larghezza viewport */
-            max-width: 350px !important;  /* Non supera mai i 350px su desktop */
-            box-sizing: border-box;       /* Include il padding nel calcolo larghezza */
-            margin: 0 auto !important;    /* Centra il popover */
-            left: 50% !important;         /* Forza il centro */
-            transform: translateX(-50%);  /* Centratura esatta */
-            position: fixed !important;   /* Evita che esca dal flusso visivo */
+            width: 90vw !important;
+            max-width: 350px !important;
+            box-sizing: border-box;
+            margin: 0 auto !important;
+            left: 50% !important;
+            transform: translateX(-50%);
+            position: fixed !important;
         }
         .driver-popover.driverjs-theme .driver-popover-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.3rem;
-            color: var(--accent-color);
-            margin-bottom: 8px;
+            font-family: 'Outfit', sans-serif; font-size: 1.3rem; color: var(--accent-color); margin-bottom: 8px;
         }
         .driver-popover.driverjs-theme .driver-popover-description {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1rem;
-            line-height: 1.6;
-            color: #e2e8f0;
-            margin-bottom: 15px;
+            font-family: 'Outfit', sans-serif; font-size: 1rem; line-height: 1.6; color: #e2e8f0; margin-bottom: 15px;
         }
-        
-        /* BOTTONI DRIVER.JS MIGLIORATI */
-        /* BOTTONI DRIVER.JS MIGLIORATI */
         .driver-popover.driverjs-theme button {
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-family: 'Outfit', sans-serif;
-            cursor: pointer;
-            transition: 0.2s;
-
-            /* MODIFICHE FIX ZOOM */
-            font-size: 16px !important;   /* 16px impedisce lo zoom automatico su iPhone */
-            touch-action: manipulation;   /* Disabilita zoom al doppio tocco */
+            border-radius: 8px; padding: 10px 16px; font-family: 'Outfit', sans-serif;
+            cursor: pointer; transition: 0.2s;
+            font-size: 16px !important;
+            touch-action: manipulation;
         }
-        
-        /* Bottone Avanti/Finito */
         .driver-popover.driverjs-theme .driver-popover-next-btn {
-            background-color: var(--accent-color) !important;
-            color: white !important;
-            border: none !important;
-            font-weight: bold;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            background-color: var(--accent-color) !important; color: white !important; border: none !important; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
-        .driver-popover.driverjs-theme .driver-popover-next-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        .driver-popover.driverjs-theme .driver-popover-next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+        .driver-popover.driverjs-theme .driver-popover-prev-btn {
+            background-color: transparent !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; color: #ffffff !important; text-shadow: none !important;
         }
+        .driver-popover.driverjs-theme .driver-popover-prev-btn:hover { background-color: rgba(255, 255, 255, 0.1) !important; border-color: #ffffff !important; }
 
-        /* Bottone Indietro (DEFAULT / DARK MODE) */
-                .driver-popover.driverjs-theme .driver-popover-prev-btn {
-                    /* Sfondo trasparente così non fa contrasto schifoso */
-                    background-color: transparent !important;
-                    /* Bordo bianco visibile */
-                    border: 1px solid rgba(255, 255, 255, 0.6) !important;
-                    /* Testo BIANCO PURO */
-                    color: #ffffff !important;
-                    text-shadow: none !important;
-                }
-                
-                /* Effetto quando passi sopra col mouse */
-                .driver-popover.driverjs-theme .driver-popover-prev-btn:hover {
-                    background-color: rgba(255, 255, 255, 0.1) !important;
-                    border-color: #ffffff !important;
-                }
-
-                /* Bottone Indietro (LIGHT MODE) */
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-prev-btn {
-                    background-color: transparent !important;
-                    /* Bordo scuro */
-                    border: 1px solid #94a3b8 !important;
-                    /* Testo scuro (Blu scuro/Nero) */
-                    color: #0f172a !important;
-                }
-                
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-prev-btn:hover {
-                    background-color: rgba(0,0,0,0.05) !important;
-                    border-color: #0f172a !important;
-                }
-        /* 1. Sfondo del fumetto bianco */
-                body.light-mode .driver-popover.driverjs-theme {
-                    background-color: #ffffff !important;
-                    border: 1px solid #cbd5e1 !important;
-                    color: #0f172a !important; /* Testo scuro */
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
-                }
-
-                /* 2. Titolo scuro/colorato */
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-title {
-                    color: var(--accent-color) !important;
-                }
-
-                /* 3. Descrizione grigio scuro (leggibile) */
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-description {
-                    color: #334155 !important;
-                }
-
-                /* 4. Tasto "Indietro" in Light Mode (Grigio scuro su bianco) */
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-prev-btn {
-                    background-color: transparent !important;
-                    border: 1px solid #94a3b8 !important; /* Bordo grigio visibile */
-                    color: #0f172a !important; /* Testo quasi nero */
-                    text-shadow: none !important;
-                }
-
-                /* Hover tasto Indietro */
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-prev-btn:hover {
-                    background-color: #f1f5f9 !important; /* Sfondo grigino chiaro */
-                    border-color: #475569 !important;
-                }
-
-                /* 5. Tasto "Avanti" (Resta blu, testo bianco) */
-                body.light-mode .driver-popover.driverjs-theme .driver-popover-next-btn {
-                    background-color: var(--accent-color) !important;
-                    color: #ffffff !important;
-                }
+        /* Driver JS Light Mode */
+        body.light-mode .driver-popover.driverjs-theme { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important; }
+        body.light-mode .driver-popover.driverjs-theme .driver-popover-title { color: var(--accent-color) !important; }
+        body.light-mode .driver-popover.driverjs-theme .driver-popover-description { color: #334155 !important; }
+        body.light-mode .driver-popover.driverjs-theme .driver-popover-prev-btn { background-color: transparent !important; border: 1px solid #94a3b8 !important; color: #0f172a !important; }
+        body.light-mode .driver-popover.driverjs-theme .driver-popover-prev-btn:hover { background-color: #f1f5f9 !important; border-color: #475569 !important; }
+        body.light-mode .driver-popover.driverjs-theme .driver-popover-next-btn { background-color: var(--accent-color) !important; color: #ffffff !important; }
     </style>
 </head>
 <body>
@@ -546,6 +428,15 @@
                 <option value="n">Neutro (Grande, Ottimo lavoro...)</option>
             </select>
             <button class="btn btn-primary" style="margin-top:20px;" onclick="saveSetup()">Iniziamo!</button>
+        </div>
+    </div>
+
+    <div id="install-modal">
+        <div class="install-box">
+            <button class="close-modal-btn" onclick="closeInstallGuide()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="install-content">
+                </div>
+            <button class="btn btn-primary" style="margin-top:20px" onclick="closeInstallGuide()">Ho Capito</button>
         </div>
     </div>
 
@@ -729,7 +620,7 @@
                 </select>
             </div>
 
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h3 style="margin:0;"><i class="fa-solid fa-moon"></i> Tema Scuro</h3>
                     <small style="color:var(--text-muted)">Disattiva per passare al tema chiaro</small>
@@ -739,7 +630,23 @@
                     <span class="slider round"></span>
                 </label>
             </div>
-            <div class="card" style="border: 1px solid var(--danger);">
+
+            <div class="card" onclick="openInstallGuide()" style="cursor: pointer; border: 1px solid var(--accent-color); background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), transparent); margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div style="background: var(--accent-color); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-mobile-screen" style="color:white; font-size:1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin:0;">Installa App</h3>
+                            <small style="color:var(--text-muted)">Aggiungi alla Home Screen</small>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i>
+                </div>
+            </div>
+
+            <div class="card" style="border: 1px solid var(--danger); margin-top:20px;">
                 <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Zona Pericolosa</h3>
                 <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 20px;">
                     L'eliminazione dell'account è irreversibile. Perderai tutti i voti e le materie salvate.
@@ -755,7 +662,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- TOAST SYSTEM (New Foolproof feature) ---
         window.showToast = (msg, type = 'info') => {
             const cont = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -773,7 +679,6 @@
             }, 3000);
         }
 
-        // --- CLASSE AI INTEGRATA ---
         class RecoveryAI {
             constructor(grades, userGradeStep) {
                 this.grades = grades;
@@ -806,13 +711,11 @@
                 return { max, min, avg: weightSum > 0 ? sum / weightSum : 0, currentSum: sum, currentWeight: weightSum, trend };
             }
 
-            // --- CALCOLO PERCORSO CRESCENTE ---
             calculatePath(targetAvg, numGrades) {
                 const N = parseInt(numGrades);
                 const targetTotalScore = targetAvg * (this.stats.currentWeight + N);
                 const neededTotalPoints = targetTotalScore - this.stats.currentSum;
                
-                // Se servono troppi punti, impossibile
                 if (neededTotalPoints / N > 10) {
                      const impVal = (neededTotalPoints/N).toFixed(2);
                      return {
@@ -826,7 +729,6 @@
                 const validGrades = this.generateValidGradeScale();
                 const avgNeeded = neededTotalPoints / N;
 
-                // Se è 1 solo voto, è semplice
                 if (N === 1) {
                     let found = validGrades.find(g => g.val >= avgNeeded);
                     if (!found) found = { val: avgNeeded, display: avgNeeded.toFixed(2), impossible:true };
@@ -834,35 +736,30 @@
                         neededAvg: found.display,
                         numericVal: found.val,
                         difficulty: this.evaluateDifficulty(found.val),
-                        path: [found], // Percorso di 1 step
+                        path: [found],
                         message: this.generateAdvice(found.val, N, found.display, found.impossible)
                     };
                 }
 
-                // Generazione Percorso Crescente (Linear Progression)
                 let path = [];
                 let pointsRemaining = neededTotalPoints;
                
                 for(let i=0; i<N; i++) {
-                    let progressFactor = (i - (N-1)/2) * 0.5; // Slope factor (es. -0.5, 0, +0.5)
+                    let progressFactor = (i - (N-1)/2) * 0.5;
                     let targetVal = avgNeeded + progressFactor;
                    
-                    // Se è l'ultimo step, deve coprire ESATTAMENTE il rimanente
                     if (i === N - 1) {
                         targetVal = pointsRemaining;
                     }
 
-                    // Trova il voto valido più vicino
                     let bestMatch = validGrades.reduce((prev, curr) => {
                         return (Math.abs(curr.val - targetVal) < Math.abs(prev.val - targetVal) ? curr : prev);
                     });
                    
-                    // Correzione ultimo step: deve essere ALMENO quanto serve per la somma
                     if (i === N - 1 && bestMatch.val < pointsRemaining) {
                          bestMatch = validGrades.find(g => g.val >= pointsRemaining) || bestMatch;
                     }
                    
-                    // Limiti 1-10
                     if(bestMatch.val > 10) bestMatch = {val:10, display:"10", impossible:true};
                    
                     path.push(bestMatch);
@@ -920,7 +817,6 @@
             }
         }
 
-        /* --- FIREBASE CONFIG --- */
         const firebaseConfig = {
             apiKey: "AIzaSyCZ36t3Zi0D_A1q2MjjZp2V6d1Zb2adGzs",               authDomain: "mioregistro-668d3.firebaseapp.com",               projectId: "mioregistro-668d3",               storageBucket: "mioregistro-668d3.firebasestorage.app",               messagingSenderId: "114433976476",               appId: "1:114433976476:web:49c7628bf354783372a559",
         };
@@ -931,25 +827,23 @@
 
         let currentUser = null;
         let userData = {};
-        let userTargets = {}; // NUOVO: Targets per materia
+        let userTargets = {};
         let userName = "Studente";
         let userPronoun = "m";
-        let userGradeStep = 0.20; // DEFAULT
-        let userPeriodType = "TP"; // TP or QQ
-        let currentPeriodFilter = "all"; // all, p1, p2
+        let userGradeStep = 0.20;
+        let userPeriodType = "TP";
+        let currentPeriodFilter = "all";
 
         let myChart = null;
         let detailChart = null;
         let isRegisterMode = false;
-        let recoveryGradeCount = 2; // Default recovery count
+        let recoveryGradeCount = 2;
 
-        // VOTE SELECTOR STATE
         let voteState = {
             dash: { int: 6, mod: 'none' },
             det: { int: 6, mod: 'none' }
         };
 
-        // --- EXPORT GLOBALS ---
         window.openSettings = () => { switchScreen('settings'); document.getElementById("myDropdown").classList.remove('show'); };
         window.closeSettings = () => switchScreen('app');
         window.toggleAuthMode = toggleAuthMode;
@@ -981,47 +875,94 @@
             updateUI(userData);
         }
        
-        // --- NUOVO: CAMBIA OBIETTIVO PER MATERIA (DEBOUNCED) ---
-        let targetDebounceTimer = null;
+        // --- FUNZIONI GUIDA INSTALLAZIONE ---
+        window.openInstallGuide = () => {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            
+            let html = '';
+            
+            if (isIOS) {
+                html = `
+                    <i class="fa-brands fa-apple install-main-icon"></i>
+                    <h3 class="install-title">Installa su iPhone</h3>
+                    <p class="install-desc">Usa <strong>Safari</strong> per aggiungere l'app.</p>
+                    <div class="install-steps-container">
+                        <div class="install-step-row">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            <span>1. Tocca <strong>Condividi</strong> in basso.</span>
+                        </div>
+                        <div class="install-step-row">
+                            <i class="fa-regular fa-square-plus"></i>
+                            <span>2. Scorri su <strong>"Aggiungi a Home"</strong>.</span>
+                        </div>
+                        <div class="install-step-row">
+                            <i class="fa-solid fa-plus" style="font-weight:bold;"></i>
+                            <span>3. Premi <strong>Aggiungi</strong> in alto.</span>
+                        </div>
+                    </div>
+                `;
+            } else if (isAndroid) {
+                html = `
+                    <i class="fa-brands fa-android install-main-icon" style="color:#3ddc84 !important;"></i>
+                    <h3 class="install-title">Installa su Android</h3>
+                    <p class="install-desc">Usa <strong>Chrome</strong> per l'installazione.</p>
+                    <div class="install-steps-container">
+                        <div class="install-step-row">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <span>1. Tocca i <strong>3 puntini</strong> in alto.</span>
+                        </div>
+                        <div class="install-step-row">
+                            <i class="fa-solid fa-download"></i>
+                            <span>2. Seleziona <strong>"Installa app"</strong>.</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <i class="fa-solid fa-display install-main-icon"></i>
+                    <h3 class="install-title">Installa su PC/Mac</h3>
+                    <p class="install-desc">Clicca l'icona di installazione <i class="fa-solid fa-circle-down"></i> nella barra degli indirizzi del browser.</p>
+                `;
+            }
 
+            document.getElementById('install-content').innerHTML = html;
+            document.getElementById('install-modal').style.display = 'flex';
+        }
+
+        window.closeInstallGuide = () => {
+            document.getElementById('install-modal').style.display = 'none';
+        }
+
+        let targetDebounceTimer = null;
         window.changeTargetDB = (delta) => {
             const subject = document.getElementById('detail-title').innerText;
             if(!subject) return;
 
-            // Recupera target attuale o default 6
             let currentTarget = userTargets[subject] !== undefined ? userTargets[subject] : 6.0;
             let newTarget = currentTarget + delta;
            
-            // Limiti sensati (1-10)
             if(newTarget < 1) newTarget = 1;
             if(newTarget > 10) newTarget = 10;
            
-            // Aggiorna localmente subito
             userTargets[subject] = newTarget;
             document.getElementById('target-display-val').innerText = newTarget.toFixed(1);
            
-            // Ricalcola UI subito (ottimistico)
             updateRecoveryStrategy();
            
-            // Debounce Salvataggio DB
             if(targetDebounceTimer) clearTimeout(targetDebounceTimer);
            
             targetDebounceTimer = setTimeout(async () => {
                 await updateDoc(doc(db, "users", currentUser.uid), { targets: userTargets });
-            }, 1000); // Salva dopo 1 secondo di inattività
+            }, 1000);
         };
 
-        // --- FUNZIONE RECUPERO AGGIORNATA CON TARGET DINAMICO ---
         window.updateRecoveryStrategy = function() {
             const subjectName = document.getElementById('detail-title').innerText;
             const allGrades = userData[subjectName] || [];
-           
-            // FILTRA PER STRATEGIA SOLO I VOTI VISIBILI
             const grades = filterGradesByPeriod(allGrades);
-           
-            // OTTIENI OBIETTIVO
             const target = userTargets[subjectName] !== undefined ? userTargets[subjectName] : 6.0;
-            // Assicuriamoci che il display sia sincronizzato (in caso di caricamento iniziale)
             document.getElementById('target-display-val').innerText = target.toFixed(1);
 
             let cS=0, cW=0;
@@ -1043,24 +984,17 @@
             let html = '';
 
             if (avg >= target) {
-                // MODALITÀ SAFE
                 sb.className = 'card strategy-box strategy-safe';
                 titleEl.innerHTML = `<i class="fa-solid fa-trophy"></i> ${bravo} ${userName}!`;
-               
-                // Calcolo voto minimo per restare sopra il TARGET (non 6)
                 const minGrade = Math.ceil((target * (cW + 1) - cS) * 10) / 10;
-               
                 html = `<p style="margin-top:0">Sei sopra il tuo obiettivo (${target}). Per mantenerlo basta:</p>`;
-               
                 if(minGrade > 1) {
                     html += `<div class="safety-card" style="border-color:var(--success); color:var(--success)"><small>MINIMO SALVEZZA (Prossimo voto)</small><br><div class="safety-val">${minGrade}</div></div>`;
                 } else {
                     html += `<p><strong>Sei in una botte di ferro!</strong> Anche prendendo 1 resti sopra l'obiettivo.</p>`;
                 }
             } else {
-                // MODALITÀ RECUPERO
                 sb.className = 'card strategy-box';
-                // Reset border color stile default
                 sb.style.borderColor = "var(--glass-border)";
                 titleEl.innerHTML = `<i class="fa-solid fa-robot"></i> AI Strategist`;
 
@@ -1076,12 +1010,10 @@
                             </select>
                         </div>`;
 
-                // USA IL TARGET DINAMICO
                 const ai = new RecoveryAI(grades, userGradeStep);
                 const plan = ai.calculatePath(target, recoveryGradeCount);
                 const advice = plan.message;
 
-                // CARD PRINCIPALE
                 html += `
                 <div style="border: 1px solid ${advice.color}; background: linear-gradient(135deg, ${advice.color}11, transparent); padding: 20px; border-radius: 12px; text-align: center; margin-top: 10px;">
                     <div style="font-size: 2.5rem; color: ${advice.color}; margin-bottom: 10px;">
@@ -1100,7 +1032,6 @@
                 </div>
                 `;
 
-                // VISUALIZZAZIONE "PERCORSO" (Se ci sono più voti)
                 if (plan.path.length > 1) {
                     html += `<div class="path-container"><div class="path-steps">`;
                     plan.path.forEach((step, idx) => {
@@ -1110,10 +1041,9 @@
                        
                         if (idx === plan.path.length - 1) stepClass = 'step-easy';
                        
-                        // ICONA DINAMICA
-                        let iconClass = 'fa-shoe-prints'; // Default Inizio
-                        if (idx === plan.path.length - 1) iconClass = 'fa-flag-checkered'; // Fine
-                        else if (idx > 0) iconClass = 'fa-arrow-trend-up'; // Middle
+                        let iconClass = 'fa-shoe-prints';
+                        if (idx === plan.path.length - 1) iconClass = 'fa-flag-checkered';
+                        else if (idx > 0) iconClass = 'fa-arrow-trend-up';
 
                         html += `
                             <div class="path-step-card ${stepClass}">
@@ -1172,7 +1102,7 @@
                         pronoun: null,
                         gradeStep: 0.20,
                         periodType: "TP",
-                        targets: {}, // NEW
+                        targets: {},
                         subjects: defaultSubjects
                     });
                 }
@@ -1181,33 +1111,20 @@
 
         async function loginWithGoogle() { await handleSocialLogin(new GoogleAuthProvider()); }
 
-        // --- FUNZIONE MODIFICATA: SALVATAGGIO SETUP + TUTORIAL ---
         async function saveSetup() {
             const chosen = document.getElementById('setup-pronoun').value;
-           
-            // Salva nel DB
             if (currentUser) {
                 await updateDoc(doc(db, "users", currentUser.uid), { pronoun: chosen });
             }
-           
-            // Chiudi modale
             document.getElementById('setup-modal').style.display = 'none';
-
-            // Aggiorna variabili locali
             userPronoun = chosen;
-           
-            // Aggiorna coach (testi)
             const gAvg = document.getElementById('global-average').innerText;
             updateMentalCoach(parseFloat(gAvg));
-
-            // AVVIA IL TUTORIAL
             startTutorial();
         }
 
-        // --- NUOVA FUNZIONE: TUTORIAL ANIMATO ---
         function startTutorial() {
             const driver = window.driver.js.driver;
-           
             const driverObj = driver({
                 showProgress: true,
                 animate: true,
@@ -1215,7 +1132,7 @@
                 doneBtnText: "Ho capito, andiamo!",
                 nextBtnText: "Avanti",
                 prevBtnText: "Indietro",
-                popoverClass: 'driverjs-theme', // Usa il nostro stile custom
+                popoverClass: 'driverjs-theme',
                 steps: [
                     {
                         popover: {
@@ -1266,23 +1183,19 @@
                     }
                 ]
             });
-
             driverObj.drive();
         }
 
-        // --- NEW VOTE LOGIC (LIMIT FIX & RESET) ---
         function updateInt(ctx, change) {
             let newVal = voteState[ctx].int + change;
             if (newVal < 1) newVal = 1;
             if (newVal > 10) newVal = 10;
-
             if (newVal === 10 && (voteState[ctx].mod === 'plus' || voteState[ctx].mod === 'half')) {
                 setMod(ctx, 'none');
             }
             if (newVal === 1 && voteState[ctx].mod === 'minus') {
                 setMod(ctx, 'none');
             }
-
             voteState[ctx].int = newVal;
             document.getElementById(`${ctx}-vote-val`).innerText = newVal;
             updateModButtons(ctx);
@@ -1292,7 +1205,6 @@
             const currentInt = voteState[ctx].int;
             if (currentInt === 10 && (mod === 'plus' || mod === 'half')) return;
             if (currentInt === 1 && mod === 'minus') return;
-
             voteState[ctx].mod = mod;
             updateModButtons(ctx);
         }
@@ -1300,15 +1212,12 @@
         function updateModButtons(ctx) {
             const mods = ['none', 'plus', 'minus', 'half'];
             const currentInt = voteState[ctx].int;
-           
             mods.forEach(m => {
                 const btn = document.getElementById(`${ctx}-mod-${m}`);
                 btn.classList.remove('active');
                 btn.disabled = false;
-
                 if (currentInt === 10 && (m === 'plus' || m === 'half')) btn.disabled = true;
                 if (currentInt === 1 && m === 'minus') btn.disabled = true;
-
                 if (voteState[ctx].mod === m) btn.classList.add('active');
             });
         }
@@ -1317,7 +1226,6 @@
             const v = voteState[ctx];
             let num = v.int;
             let display = v.int.toString();
-
             if (v.mod === 'plus') {
                 num += userGradeStep;
                 display += "+";
@@ -1331,7 +1239,6 @@
             return { numeric: num, display: display };
         }
 
-        // --- UPDATE STEP IN DB ---
         async function updateGradeStepDB() {
             const val = parseFloat(document.getElementById('grade-step-input').value);
             if(isNaN(val) || val < 0) return showToast("Valore non valido", 'error');
@@ -1342,7 +1249,6 @@
             }
         }
        
-        // --- UPDATE PERIOD TYPE IN DB ---
         async function updatePeriodTypeDB() {
             const val = document.getElementById('period-type-input').value;
             userPeriodType = val;
@@ -1413,7 +1319,7 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     userData = data.subjects || {};
-                    userTargets = data.targets || {}; // CARICA TARGETS
+                    userTargets = data.targets || {};
                     userName = data.username || "Studente";
                    
                     userGradeStep = data.gradeStep !== undefined ? data.gradeStep : 0.20;
@@ -1446,7 +1352,6 @@
             });
         }
        
-        // --- FILTRO PERIODO LOGIC (CON PULSANTI) ---
         function updatePeriodSelectorOptions() {
             const container = document.getElementById('period-buttons-container');
             if(!container) return;
@@ -1467,13 +1372,11 @@
                 btn.className = `btn-mod ${currentPeriodFilter === opt.val ? 'active' : ''}`;
                 btn.onclick = () => changePeriodFilter(opt.val);
                 btn.innerText = opt.label;
-                btn.style.flex = "1"; // Distribuisce uniformemente lo spazio
-                // btn.style.fontSize = "12px"; // Opzionale se il testo è lungo
+                btn.style.flex = "1";
                 container.appendChild(btn);
             });
         }
 
-        // Ritorna true se il voto appartiene al periodo selezionato
         function filterGradesByPeriod(grades) {
             if (currentPeriodFilter === 'all') return grades;
            
@@ -1482,30 +1385,18 @@
                 if(!id) return true;
 
                 const date = new Date(id);
-                const month = date.getMonth() + 1; // 1-12
-
-                // LOGICA:
-                // Anno scolastico inizia a Settembre (9).
-                // TRIMESTRE (TP): Sett(9) - Dic(12)
-                // PENTAMESTRE (TP): Gen(1) - Ago(8)
-                // 1° QUAD (QQ): Sett(9) - Gen(1)
-                // 2° QUAD (QQ): Feb(2) - Ago(8)
+                const month = date.getMonth() + 1;
 
                 if (userPeriodType === 'TP') {
                     if (currentPeriodFilter === 'p1') {
-                        // Trimestre: Settembre, Ottobre, Novembre, Dicembre
                         return (month >= 9 && month <= 12);
                     } else {
-                        // Pentamestre: Gennaio - Agosto
                         return (month >= 1 && month <= 8);
                     }
                 } else {
-                    // QQ
                     if (currentPeriodFilter === 'p1') {
-                        // 1 Quad: Settembre - Gennaio
                         return (month >= 9 && month <= 12) || (month === 1);
                     } else {
-                        // 2 Quad: Febbraio - Agosto
                         return (month >= 2 && month <= 8);
                     }
                 }
@@ -1515,15 +1406,11 @@
         async function addSubjectDB() {
             let name = document.getElementById('new-subject-name').value.trim();
             if(!name) return;
-           
-            // FOOLPROOF CHECK: NO DUPLICATES (Case Insensitive)
             const exists = Object.keys(userData).some(k => k.toLowerCase() === name.toLowerCase());
             if (exists) {
                 showToast("Questa materia esiste già!", "error");
                 return;
             }
-           
-            // FOOLPROOF: Capitalize first letter
             name = name.charAt(0).toUpperCase() + name.slice(1);
 
             userData[name] = [];
@@ -1609,7 +1496,6 @@
             const sel = document.getElementById('input-subject');
             cont.innerHTML = '';
            
-            // EMPTY STATE (Foolproof UX)
             if (Object.keys(subjects).length === 0) {
                 cont.innerHTML = `
                 <div style="text-align:center; padding:40px 20px; opacity:0.7;">
@@ -1620,7 +1506,6 @@
                 </div>`;
             }
            
-            // Popola la select input subject (mostra sempre tutte le materie)
             sel.innerHTML = '<option value="">Seleziona...</option>';
             const sortedSubjects = Object.entries(subjects).sort((a, b) => a[0].localeCompare(b[0]));
             for (const [n, g] of sortedSubjects) {
@@ -1631,7 +1516,6 @@
             const l=[], d=[];
 
             for (const [n, allGrades] of sortedSubjects) {
-                // FILTRA I VOTI PER IL CALCOLO MEDIA
                 const filteredGrades = filterGradesByPeriod(allGrades);
                 const avg = calculateWeightedAvg(filteredGrades);
                
@@ -1729,7 +1613,6 @@
 
         function renderDetail(name) {
             const allGrades = userData[name] || [];
-            // FILTRA ANCHE QUI
             const grades = filterGradesByPeriod(allGrades);
            
             document.getElementById('detail-title').innerText = name;
@@ -1757,11 +1640,8 @@
                 ld.innerHTML += `<div class="grade-item-detailed"><div class="grade-val ${i.val>=6?'grade-good':'grade-bad'}">${i.display}</div><div style="flex-grow:1"><span style="font-size:0.8rem;opacity:0.7">Voto:${i.val.toFixed(2)}</span><span class="grade-weight">Peso:${i.weight}%</span></div><i class="fa-solid fa-trash delete-single-btn" onclick="deleteGradeDB('${name}', ${i.id})"></i></div>`;
             });
            
-            // --- GESTIONE TARGET DISPLAY ---
-            const targetCard = document.getElementById('target-selector-card');
             const targetDisplay = document.getElementById('target-display-val');
-            if(targetCard && targetDisplay) {
-                targetCard.style.display = 'block';
+            if(targetDisplay) {
                 const t = userTargets[name] !== undefined ? userTargets[name] : 6.0;
                 targetDisplay.innerText = t.toFixed(1);
             }
