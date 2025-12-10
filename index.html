@@ -202,6 +202,19 @@
         .btn-mod:hover { border-color: var(--accent-color); }
         .btn-mod.active { background: var(--accent-color); border-color: var(--accent-color); box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
         .btn-mod:disabled { opacity: 0.3; cursor: not-allowed; border-color: transparent; }
+        
+        /* PERIOD FILTER STYLES */
+        .period-selector {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+            display: block; /* Modificato da flex a block per stacking */
+        }
 
         /* --- TEMA CHIARO (Light Mode) --- */
         body.light-mode {
@@ -286,6 +299,11 @@
         /* Select dentro box strategia light mode */
         body.light-mode #recovery-count { color: #0f172a !important; border-bottom: 1px solid #cbd5e1 !important; }
         body.light-mode #recovery-count option { background: white; color: black; }
+
+        body.light-mode .period-selector {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
 
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -379,11 +397,7 @@
                     <div><div class="stat-value" id="count-subjects">0</div><small>Materie</small></div>
                     <div><div class="stat-value" id="count-grades">0</div><small>Voti Totali</small></div>
                 </div>
-                <div class="card"><div class="chart-container"><canvas id="gradeChart"></canvas></div></div>
-                <div id="subjects-container"></div>
-            </main>
 
-            <aside>
                 <div class="card coach-card">
                     <div class="coach-header">
                         <i class="fa-solid fa-brain coach-icon"></i><h3 style="margin:0; font-size:1.1rem; color:#38bdf8;">Mental Coach</h3>
@@ -391,6 +405,20 @@
                     <div id="coach-message" class="coach-text">Analisi motivazionale in corso...</div>
                 </div>
 
+                <div class="card"><div class="chart-container"><canvas id="gradeChart"></canvas></div></div>
+                <div id="subjects-container"></div>
+                
+                <div class="period-selector">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+                        <i class="fa-solid fa-calendar-days" style="color:var(--accent-color)"></i>
+                        <span style="font-weight:bold;">Filtra periodo:</span>
+                    </div>
+                    <div id="period-buttons-container" class="vote-modifiers" style="width:100%">
+                        </div>
+                </div>
+            </main>
+
+            <aside>
                 <div class="card">
                     <h3>Registra Voto</h3>
                     <select id="input-subject"><option value="">Caricamento...</option></select>
@@ -442,11 +470,8 @@
                 </div>
             </div>
             
-            <div id="strategy-container"></div>
-            
             <div class="card" style="border: 1px solid var(--accent-color);">
                 <h3><i class="fa-solid fa-plus-circle"></i> Aggiungi Voto</h3>
-                
                 <div class="vote-selector-wrapper">
                     <div class="vote-stepper">
                         <button class="btn-step" onclick="updateInt('det', -1)">-</button>
@@ -460,7 +485,6 @@
                         <button class="btn-mod" id="det-mod-half" onclick="setMod('det', 'half')">½</button>
                     </div>
                 </div>
-
                 <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top:10px;">
                     <div style="display:flex; align-items:center; gap:5px; width: 100px;">
                         <input type="number" id="detail-input-weight" value="100" min="0" max="100" style="margin:0;">
@@ -471,6 +495,21 @@
                     </button>
                 </div>
             </div>
+
+            <div id="strategy-wrapper" class="card strategy-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                    <h3 id="strategy-title" style="margin:0; font-size:1.1rem;"><i class="fa-solid fa-robot"></i> AI Strategist</h3>
+                    
+                    <div class="vote-selector-wrapper" style="margin:0; gap:5px; align-items:center;">
+                        <small style="margin-right:5px; color:var(--text-muted); font-weight:bold;">OBIETTIVO:</small>
+                        <div class="vote-stepper" style="transform: scale(0.9); min-width:100px;">
+                             <button class="btn-step" onclick="changeTargetDB(-0.5)" style="padding:8px;">-</button>
+                             <span id="target-display-val" class="vote-display" style="font-size:1.2rem;">6.0</span>
+                             <button class="btn-step" onclick="changeTargetDB(0.5)" style="padding:8px;">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="strategy-body"></div> </div>
 
             <div class="card">
                 <h3>Registro Voti</h3>
@@ -497,6 +536,15 @@
                 <p style="color:var(--text-muted)">Gestisci il tuo account e le preferenze di NeoRegister.</p>
             </div>
             
+            <div class="card">
+                <h3>Configurazione Anno Scolastico</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Scegli come è suddiviso il tuo anno.</p>
+                <select id="period-type-input" onchange="updatePeriodTypeDB()">
+                    <option value="TP">Trimestre + Pentamestre (Default)</option>
+                    <option value="QQ">Quadrimestre + Quadrimestre</option>
+                </select>
+            </div>
+
             <div class="card">
                 <h3>Valore dei simboli (+ / -)</h3>
                 <p style="color:var(--text-muted); font-size:0.9rem;">Scegli quanto vale un "più" o un "meno" sui voti.</p>
@@ -574,7 +622,13 @@
                 
                 // Se servono troppi punti, impossibile
                 if (neededTotalPoints / N > 10) {
-                     return { impossible: true, neededAvg: (neededTotalPoints/N).toFixed(2), path: [] };
+                     const impVal = (neededTotalPoints/N).toFixed(2);
+                     return {
+                         impossible: true,
+                         neededAvg: impVal,
+                         path: [],
+                         message: this.generateAdvice(11, N, impVal, true)
+                     };
                 }
 
                 const validGrades = this.generateValidGradeScale();
@@ -661,7 +715,12 @@
 
             generateAdvice(val, N, displayVal, isImpossible) {
                 const diff = isImpossible ? 'impossible' : this.evaluateDifficulty(val);
-                if (diff === 'impossible') return { icon: "fa-skull-crossbones", color: "var(--danger)", title: "Impossibile", text: `Serve una media del <strong>${displayVal}</strong>.` };
+                if (diff === 'impossible') return {
+                    icon: "fa-triangle-exclamation",
+                    color: "var(--danger)",
+                    title: "Irraggiungibile",
+                    text: `Non puoi raggiungere l'obiettivo con <strong>${N}</strong> voti.<br>Servirebbe una media del <strong>${displayVal}</strong>.`
+                };
                 if (diff === 'extreme') return { icon: "fa-fire", color: "#f97316", title: "Record Personale", text: `Devi superarti. Media necessaria: <strong>${displayVal}</strong>.` };
                 if (diff === 'hard') return { icon: "fa-mountain", color: "var(--warning)", title: "Impegnativo", text: `Devi eguagliare i tuoi voti migliori (${displayVal}).` };
                 if (diff === 'medium') return { icon: "fa-bolt", color: "#38bdf8", title: "Fattibile", text: `Obiettivo media <strong>${displayVal}</strong>.` };
@@ -680,9 +739,13 @@
 
         let currentUser = null;
         let userData = {};
+        let userTargets = {}; // NUOVO: Targets per materia
         let userName = "Studente";
         let userPronoun = "m";
         let userGradeStep = 0.20; // DEFAULT
+        let userPeriodType = "TP"; // TP or QQ
+        let currentPeriodFilter = "all"; // all, p1, p2
+
         let myChart = null;
         let detailChart = null;
         let isRegisterMode = false;
@@ -711,6 +774,7 @@
         window.closeDetail = closeDetail;
         window.addGradeFromDetail = addGradeFromDetail;
         window.updateGradeStepDB = updateGradeStepDB;
+        window.updatePeriodTypeDB = updatePeriodTypeDB;
         window.updateInt = updateInt;
         window.setMod = setMod;
         
@@ -719,11 +783,55 @@
             updateRecoveryStrategy();
         }
 
-        // --- FUNZIONE RECUPERO AGGIORNATA CON PATH VISUALIZER ---
+        window.changePeriodFilter = (val) => {
+            currentPeriodFilter = val;
+            updatePeriodSelectorOptions();
+            updateUI(userData);
+        }
+        
+        // --- NUOVO: CAMBIA OBIETTIVO PER MATERIA (DEBOUNCED) ---
+        let targetDebounceTimer = null;
+
+        window.changeTargetDB = (delta) => {
+            const subject = document.getElementById('detail-title').innerText;
+            if(!subject) return;
+
+            // Recupera target attuale o default 6
+            let currentTarget = userTargets[subject] !== undefined ? userTargets[subject] : 6.0;
+            let newTarget = currentTarget + delta;
+            
+            // Limiti sensati (1-10)
+            if(newTarget < 1) newTarget = 1;
+            if(newTarget > 10) newTarget = 10;
+            
+            // Aggiorna localmente subito
+            userTargets[subject] = newTarget;
+            document.getElementById('target-display-val').innerText = newTarget.toFixed(1);
+            
+            // Ricalcola UI subito (ottimistico)
+            updateRecoveryStrategy();
+            
+            // Debounce Salvataggio DB
+            if(targetDebounceTimer) clearTimeout(targetDebounceTimer);
+            
+            targetDebounceTimer = setTimeout(async () => {
+                await updateDoc(doc(db, "users", currentUser.uid), { targets: userTargets });
+            }, 1000); // Salva dopo 1 secondo di inattività
+        };
+
+        // --- FUNZIONE RECUPERO AGGIORNATA CON TARGET DINAMICO ---
         window.updateRecoveryStrategy = function() {
             const subjectName = document.getElementById('detail-title').innerText;
-            const grades = userData[subjectName] || [];
+            const allGrades = userData[subjectName] || [];
             
+            // FILTRA PER STRATEGIA SOLO I VOTI VISIBILI
+            const grades = filterGradesByPeriod(allGrades);
+            
+            // OTTIENI OBIETTIVO
+            const target = userTargets[subjectName] !== undefined ? userTargets[subjectName] : 6.0;
+            // Assicuriamoci che il display sia sincronizzato (in caso di caricamento iniziale)
+            document.getElementById('target-display-val').innerText = target.toFixed(1);
+
             let cS=0, cW=0;
             grades.forEach(g => {
                 const i = (typeof g === 'number') ? {val:g, weight:100} : g;
@@ -733,38 +841,52 @@
             });
             const avg = cW > 0 ? (cS / cW) : 0;
 
-            const sb = document.getElementById('strategy-container');
+            const sb = document.getElementById('strategy-wrapper');
+            const body = document.getElementById('strategy-body');
+            const titleEl = document.getElementById('strategy-title');
+            
             const isM = userPronoun === 'm'; const isF = userPronoun === 'f';
             const bravo = isM ? "Bravissimo" : (isF ? "Bravissima" : "Grande");
 
             let html = '';
 
-            if (avg >= 6) {
-                const minGrade = Math.ceil((6 * (cW + 1) - cS) * 10) / 10;
-                sb.className = 'strategy-box strategy-safe';
-                html = `<h3><i class="fa-solid fa-trophy"></i> ${bravo} ${userName}!</h3>
-                        <p>Sei sopra la sufficienza. Per mantenere il 6 basta:</p>`;
-                if(minGrade > 1) html += `<div class="safety-card" style="border-color:var(--success); color:var(--success)"><small>MINIMO SALVEZZA (Prossimo voto)</small><br><div class="safety-val">${minGrade}</div></div>`;
-                else html += `<p><strong>Sei in una botte di ferro!</strong> Anche prendendo 1 resti sufficiente.</p>`;
+            if (avg >= target) {
+                // MODALITÀ SAFE
+                sb.className = 'card strategy-box strategy-safe';
+                titleEl.innerHTML = `<i class="fa-solid fa-trophy"></i> ${bravo} ${userName}!`;
+                
+                // Calcolo voto minimo per restare sopra il TARGET (non 6)
+                const minGrade = Math.ceil((target * (cW + 1) - cS) * 10) / 10;
+                
+                html = `<p style="margin-top:0">Sei sopra il tuo obiettivo (${target}). Per mantenerlo basta:</p>`;
+                
+                if(minGrade > 1) {
+                    html += `<div class="safety-card" style="border-color:var(--success); color:var(--success)"><small>MINIMO SALVEZZA (Prossimo voto)</small><br><div class="safety-val">${minGrade}</div></div>`;
+                } else {
+                    html += `<p><strong>Sei in una botte di ferro!</strong> Anche prendendo 1 resti sopra l'obiettivo.</p>`;
+                }
             } else {
-                sb.className = 'strategy-box';
+                // MODALITÀ RECUPERO
+                sb.className = 'card strategy-box';
+                // Reset border color stile default
                 sb.style.borderColor = "var(--glass-border)";
+                titleEl.innerHTML = `<i class="fa-solid fa-robot"></i> AI Strategist`;
 
                 let optionsHtml = '';
                 for(let i=1; i<=5; i++) {
                     optionsHtml += `<option value="${i}" ${recoveryGradeCount === i ? 'selected' : ''}>${i} Vot${i==1?'o':'i'}</option>`;
                 }
 
-                html = `<h3><i class="fa-solid fa-robot"></i> AI Strategist</h3>
-                        <div style="margin-bottom:15px; padding:10px; border-radius:8px;">
-                            <label style="font-size:0.9rem; color:inherit;">Pianifica recupero in:</label>
+                html = `<div style="margin-bottom:15px; padding:10px; border-radius:8px;">
+                            <label style="font-size:0.9rem; color:inherit;">Pianifica scalata in:</label>
                             <select id="recovery-count" onchange="changeRecoveryCount(this.value)" style="margin-top:5px; border:none; border-bottom:1px solid white; color:inherit; background:transparent;">
                                 ${optionsHtml}
                             </select>
                         </div>`;
 
+                // USA IL TARGET DINAMICO
                 const ai = new RecoveryAI(grades, userGradeStep);
-                const plan = ai.calculatePath(6.0, recoveryGradeCount);
+                const plan = ai.calculatePath(target, recoveryGradeCount);
                 const advice = plan.message;
 
                 // CARD PRINCIPALE
@@ -821,7 +943,7 @@
                 }
             }
 
-            sb.innerHTML = html;
+            body.innerHTML = html;
         };
 
         window.handleCookieConsent = (accepted) => {
@@ -857,6 +979,8 @@
                         username: user.displayName.split(' ')[0] || "Studente",
                         pronoun: null,
                         gradeStep: 0.20,
+                        periodType: "TP",
+                        targets: {}, // NEW
                         subjects: defaultSubjects
                     });
                 }
@@ -941,6 +1065,17 @@
                 await updateDoc(doc(db, "users", currentUser.uid), { gradeStep: val });
             }
         }
+        
+        // --- UPDATE PERIOD TYPE IN DB ---
+        async function updatePeriodTypeDB() {
+            const val = document.getElementById('period-type-input').value;
+            userPeriodType = val;
+            if(currentUser) {
+                await updateDoc(doc(db, "users", currentUser.uid), { periodType: val });
+            }
+            updatePeriodSelectorOptions();
+            updateUI(userData);
+        }
 
         function toggleAuthMode() {
             isRegisterMode = !isRegisterMode;
@@ -973,7 +1108,7 @@
                     if(!name) throw new Error("Inserisci il tuo nome!");
                     const cred = await createUserWithEmailAndPassword(auth, email, pass);
                     const defaultSubjects = { "Matematica": [], "Italiano": [], "Inglese": [], "Storia": [], "Scienze": [], "Motoria": [] };
-                    await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, gradeStep: 0.20, subjects: defaultSubjects });
+                    await setDoc(doc(db, "users", cred.user.uid), { username: name, pronoun: null, gradeStep: 0.20, periodType: "TP", targets:{}, subjects: defaultSubjects });
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
@@ -1001,10 +1136,15 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     userData = data.subjects || {};
+                    userTargets = data.targets || {}; // CARICA TARGETS
                     userName = data.username || "Studente";
                     
                     userGradeStep = data.gradeStep !== undefined ? data.gradeStep : 0.20;
                     document.getElementById('grade-step-input').value = parseFloat(userGradeStep).toFixed(2);
+                    
+                    userPeriodType = data.periodType !== undefined ? data.periodType : "TP";
+                    document.getElementById('period-type-input').value = userPeriodType;
+                    updatePeriodSelectorOptions();
 
                     const localTheme = localStorage.getItem('theme');
                     const savedTheme = localTheme || data.theme || 'dark';
@@ -1024,6 +1164,72 @@
                     const title = document.getElementById('detail-title').innerText;
                     if(document.getElementById('detail-screen').style.display === 'flex' && userData[title]) {
                         renderDetail(title);
+                    }
+                }
+            });
+        }
+        
+        // --- FILTRO PERIODO LOGIC (CON PULSANTI) ---
+        function updatePeriodSelectorOptions() {
+            const container = document.getElementById('period-buttons-container');
+            if(!container) return;
+            
+            container.innerHTML = '';
+            
+            const p1Label = userPeriodType === 'QQ' ? "1° Quadrimestre" : "Trimestre";
+            const p2Label = userPeriodType === 'QQ' ? "2° Quadrimestre" : "Pentamestre";
+
+            const options = [
+                { val: 'all', label: 'Tutto l\'anno' },
+                { val: 'p1', label: p1Label },
+                { val: 'p2', label: p2Label }
+            ];
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = `btn-mod ${currentPeriodFilter === opt.val ? 'active' : ''}`;
+                btn.onclick = () => changePeriodFilter(opt.val);
+                btn.innerText = opt.label;
+                btn.style.flex = "1"; // Distribuisce uniformemente lo spazio
+                // btn.style.fontSize = "12px"; // Opzionale se il testo è lungo
+                container.appendChild(btn);
+            });
+        }
+
+        // Ritorna true se il voto appartiene al periodo selezionato
+        function filterGradesByPeriod(grades) {
+            if (currentPeriodFilter === 'all') return grades;
+            
+            return grades.filter(g => {
+                const id = (typeof g === 'number') ? null : g.id;
+                if(!id) return true;
+
+                const date = new Date(id);
+                const month = date.getMonth() + 1; // 1-12
+
+                // LOGICA:
+                // Anno scolastico inizia a Settembre (9).
+                // TRIMESTRE (TP): Sett(9) - Dic(12)
+                // PENTAMESTRE (TP): Gen(1) - Ago(8)
+                // 1° QUAD (QQ): Sett(9) - Gen(1)
+                // 2° QUAD (QQ): Feb(2) - Ago(8)
+
+                if (userPeriodType === 'TP') {
+                    if (currentPeriodFilter === 'p1') {
+                        // Trimestre: Settembre, Ottobre, Novembre, Dicembre
+                        return (month >= 9 && month <= 12);
+                    } else {
+                        // Pentamestre: Gennaio - Agosto
+                        return (month >= 1 && month <= 8);
+                    }
+                } else {
+                    // QQ
+                    if (currentPeriodFilter === 'p1') {
+                        // 1 Quad: Settembre - Gennaio
+                        return (month >= 9 && month <= 12) || (month === 1);
+                    } else {
+                        // 2 Quad: Febbraio - Agosto
+                        return (month >= 2 && month <= 8);
                     }
                 }
             });
@@ -1094,21 +1300,28 @@
             const cont = document.getElementById('subjects-container');
             const sel = document.getElementById('input-subject');
             cont.innerHTML = '';
+            
+            // Popola la select input subject (mostra sempre tutte le materie)
             sel.innerHTML = '<option value="">Seleziona...</option>';
+            const sortedSubjects = Object.entries(subjects).sort((a, b) => a[0].localeCompare(b[0]));
+            for (const [n, g] of sortedSubjects) {
+                const opt = document.createElement('option'); opt.value = n; opt.innerText = n; sel.appendChild(opt);
+            }
             
             let gs=0, gc=0, gi=0;
             const l=[], d=[];
 
-            const sortedSubjects = Object.entries(subjects).sort((a, b) => a[0].localeCompare(b[0]));
-
-            for (const [n, g] of sortedSubjects) {
-                const opt = document.createElement('option'); opt.value = n; opt.innerText = n; sel.appendChild(opt);
-                const avg = calculateWeightedAvg(g);
-                if(g.length) { gs+=avg; gc++; gi+=g.length; }
+            for (const [n, allGrades] of sortedSubjects) {
+                // FILTRA I VOTI PER IL CALCOLO MEDIA
+                const filteredGrades = filterGradesByPeriod(allGrades);
+                const avg = calculateWeightedAvg(filteredGrades);
+                
+                if(filteredGrades.length) { gs+=avg; gc++; gi+=filteredGrades.length; }
                 l.push(n);
                 d.push(avg);
+                
                 const div = document.createElement('div'); div.className = 'subject-card'; div.onclick = () => openDetail(n);
-                div.innerHTML = `<div><strong>${n}</strong><br><small style="color:var(--text-muted)">${g.length} voti</small></div><div style="font-size:1.5rem; color:${avg>=6?'var(--success)':'var(--danger)'}">${avg>0?avg.toFixed(1):'-'}</div>`;
+                div.innerHTML = `<div><strong>${n}</strong><br><small style="color:var(--text-muted)">${filteredGrades.length} voti</small></div><div style="font-size:1.5rem; color:${avg>=6?'var(--success)':'var(--danger)'}">${avg>0?avg.toFixed(1):'-'}</div>`;
                 cont.appendChild(div);
             }
 
@@ -1196,7 +1409,10 @@
         }
 
         function renderDetail(name) {
-            const grades = userData[name] || [];
+            const allGrades = userData[name] || [];
+            // FILTRA ANCHE QUI
+            const grades = filterGradesByPeriod(allGrades);
+            
             document.getElementById('detail-title').innerText = name;
             let cS=0, cW=0, maxG=0;
             grades.forEach(g => {
@@ -1216,8 +1432,8 @@
                 const i=getGradeInfo(g);
                 ld.innerHTML += `<div class="grade-item-detailed"><div class="grade-val ${i.val>=6?'grade-good':'grade-bad'}">${i.display}</div><div style="flex-grow:1"><span style="font-size:0.8rem;opacity:0.7">Voto:${i.val.toFixed(2)}</span><span class="grade-weight">Peso:${i.weight}%</span></div><i class="fa-solid fa-trash delete-single-btn" onclick="deleteGradeDB('${name}', ${i.id})"></i></div>`;
             });
-
-            updateRecoveryStrategy();
+            
+            updateRecoveryStrategy(); // RENDERIZZA STRATEGIA + SELETTORE TARGET
 
             if(detailChart) detailChart.destroy();
             let ps=0, pw=0;
