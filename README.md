@@ -1,60 +1,65 @@
 # 🎓 NeoRegister - Il Tuo Registro Futuristico
 
-![Version](https://img.shields.io/badge/version-29.1-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Status](https://img.shields.io/badge/status-active-success)
+![Version](https://img.shields.io/badge/version-31.0-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Status](https://img.shields.io/badge/status-active-success)
 
 **NeoRegister** è una Single Page Application (SPA) moderna e intelligente per gestire i tuoi voti scolastici. Non è solo un registro, è un vero e proprio assistente che ti aiuta a pianificare le tue strategie di studio con l'aiuto dell'Intelligenza Artificiale.
 
 🔗 **Repository:** [https://github.com/chricracra/IlMioRegistro.git](https://github.com/chricracra/IlMioRegistro.git)
 
-🔗 **Sito Web** [https://ilmioneoregistro.netlify.app](https://ilmioneoregistro.netlify.app)
+🔗 **Sito Web:** [https://ilmioneoregistro.netlify.app](https://ilmioneoregistro.netlify.app)
 
-## ✨ Funzionalità Avanzate
+## ✨ Nuove Funzionalità (v3.0)
+
+NeoRegister si è evoluto per adattarsi perfettamente al tuo metodo di studio e alla tua scuola. Ecco le novità principali introdotte nell'ultima versione:
+
+### 🎨 Personalizzazione Totale
+* **Tema Chiaro & Scuro:** Non ti piace il look "Dark Mode"? Ora puoi passare al **Tema Chiaro** direttamente dalle impostazioni. L'app ricorderà la tua scelta.
+* **Configurazione Anno Scolastico:** La tua scuola usa i Quadrimestri o Trimestre+Pentamestre?
+    * *Opzione TP:* Trimestre + Pentamestre (Default).
+    * *Opzione QQ:* Primo + Secondo Quadrimestre.
+    * Filtra i voti nella dashboard per vedere solo il periodo che ti interessa.
+* **Valore dei Simboli (+/-):** Decidi tu quanto vale un "più" o un "meno". Puoi impostare lo step a **0.20** (standard), **0.25** (quarti di punto) o **0.30**.
+
+### 🚀 Esperienza Utente Migliorata
+* **Tutorial Interattivo (Driver.js):** Al primo avvio, un tour guidato ti mostrerà passo passo come creare materie, aggiungere voti e interpretare i grafici.
+* **Cookie Banner:** Gestione trasparente del consenso per il salvataggio delle preferenze locali.
+* **Input Voti Rapido:** Selettore smart con tasti rapidi per voti interi, mezzi voti (½), più (+) e meno (-).
+
+---
+
+## 🧠 Funzionalità Core
 
 * **☁️ Cloud Sync (Firebase):** I tuoi dati sono al sicuro nel cloud. Accedi da PC, smartphone o tablet e ritrova tutto sincronizzato all'istante.
-* **🧠 AI Mental Coach Empatico:** Un coach virtuale che ti motiva con frasi sempre diverse, personalizzate in base ai tuoi pronomi (Lui/Lei/Neutro) e al tuo andamento attuale.
-* **📊 Grafici Radar Interattivi:** Visualizza le tue competenze in un grafico a ragnatela per capire al volo i tuoi punti di forza e le materie da recuperare.
-* **⚖️ Media Ponderata & Voti Smart:**
-    * Supporto completo per pesi personalizzabili (1% - 100%).
-    * Riconoscimento automatico dei voti come `7+` (7.20) o `6-` (6.80).
-* **🎯 Strategie di Recupero Intelligenti:**
-    * *Piano Scalata:* Un percorso progressivo e realistico basato sul tuo storico (non ti chiede un 9 se il tuo massimo è 6).
-    * *Colpo di Genio:* Calcola il voto singolo necessario per recuperare tutto in una volta.
-* **🛡️ Calcolo Salvezza:** Per le materie sufficienti, ti dice esattamente il voto minimo da prendere per non scendere sotto il 6.
-* **🎨 Design Glassmorphism:** Interfaccia scura, futuristica e reattiva con effetti vetro.
+* **🤖 AI Mental Coach:** Un coach virtuale che ti motiva con frasi sempre diverse, basate sui tuoi risultati e sul pronome che hai scelto (Lui/Lei/Neutro).
+* **📈 AI Strategist & Recupero:**
+    * **Calcolo del Percorso:** L'IA calcola la combinazione migliore di voti (da 1 a 5 prove) per raggiungere la media desiderata.
+    * **Analisi di Fattibilità:** Ti dice se l'obiettivo è "Tranquillo", "Impegnativo" o "Record Personale" basandosi sul tuo storico voti.
+    * **Minimo Salvezza:** Se hai una buona media, ti calcola il voto minimo che puoi prendere per restare comunque sopra la sufficienza.
+* **📊 Statistiche Avanzate:** Grafico Radar interattivo per vedere i tuoi punti di forza e grafici lineari per l'andamento di ogni singola materia.
 * **🔐 Login Sicuro:** Accesso rapido tramite **Google** o Email/Password.
 
-## 🚀 Come Iniziare
+## 📱 Installazione su Smartphone (PWA)
 
-Il progetto è puro HTML/JS, non richiede installazioni complesse.
-
-### Prerequisiti
-1.  Un account **Google Firebase** (Gratuito).
-2.  Un browser web moderno.
-
-### Installazione
-
----
-
-## 📱 Installazione su Smartphone (Android & iOS)
-
-NeoRegister è una **Progressive Web App (PWA)**. Questo significa che puoi installarla direttamente dal browser senza passare dagli Store (App Store o Play Store). L'app apparirà nella tua Home, funzionerà a schermo intero e occuperà pochissimo spazio.
+NeoRegister è una **Progressive Web App**. Installala senza passare dagli Store per averla a schermo intero.
 
 ### 🤖 Per Android (Chrome)
-1. Apri il link del sito su **Google Chrome**.
-2. Dovrebbe apparire automaticamente un banner in basso: **"Aggiungi a Schermata Home"** o **"Installa App"**.
-3. Se non compare, clicca sui **3 puntini** in alto a destra ➔ **Installa app**.
-4. L'icona verrà aggiunta al tuo menu applicazioni.
+1.  Apri il sito su **Chrome**.
+2.  Tocca i **3 puntini** in alto a destra ➔ **Installa app** (o "Aggiungi a schermata Home").
 
-### 🍎 Per iOS (iPhone / iPad)
-*Nota: Su iOS è necessario usare il browser **Safari**.*
+### 🍎 Per iOS (iPhone/iPad)
+1.  Apri il sito su **Safari**.
+2.  Tocca **Condividi** (quadrato con freccia in alto).
+3.  Scorri e seleziona **"Aggiungi alla schermata Home"**.
 
-1. Apri il link del sito su **Safari**.
-2. Clicca sull'icona **Condividi** (il quadrato con la freccia verso l'alto ⬆️) nella barra in basso.
-3. Scorri il menu verso il basso fino a trovare la voce ➕ **"Aggiungi alla schermata Home"**.
-4. Clicca su **Aggiungi** in alto a destra.
-5. Troverai l'icona di NeoRegister sulla tua Home Screen.
+## 🛠️ Setup per Sviluppatori
 
----
+Il progetto è puro HTML/JS, non richiede build tools complessi (Webpack/Vite non necessari).
+
+### Prerequisiti
+1.  Account **Google Firebase** (Gratuito).
+2.  Browser moderno.
+
+### Installazione
 
 1.  **Clona il repository:**
     ```bash
@@ -62,26 +67,29 @@ NeoRegister è una **Progressive Web App (PWA)**. Questo significa che puoi inst
     ```
 2.  **Configura Firebase:**
     * Crea un progetto su [Firebase Console](https://console.firebase.google.com/).
-    * Abilita **Authentication** (Google e Email/Password).
+    * Abilita **Authentication** (Google Provider + Email/Password).
     * Crea un **Firestore Database**.
-    * Copia le chiavi di configurazione del progetto Web.
+    * Copia le chiavi di configurazione (`apiKey`, `authDomain`, ecc.).
 3.  **Collega il codice:**
-    * Apri il file `index.html` con un editor di testo (es. Blocco Note, VS Code).
-    * Scorri fino in fondo e trova la sezione `const firebaseConfig`.
-    * Sostituisci i valori finti con le tue chiavi reali.
+    * Apri `index.html`.
+    * Cerca la sezione `const firebaseConfig = { ... }` (circa riga 630).
+    * Incolla le tue chiavi.
 4.  **Avvia:**
-    * Fai semplicemente doppio click su `index.html` per aprirlo nel browser!
+    * Apri `index.html` nel browser o usa un'estensione come "Live Server".
 
-## 🛠️ Tecnologie Usate
+## 📚 Tecnologie Usate
 
-* **Frontend:** HTML5, CSS3 (Glassmorphism), JavaScript (Vanilla ES6+).
-* **Grafica:** FontAwesome (Icone), Chart.js (Grafici).
-* **Backend (BaaS):** Google Firebase (Auth & Firestore).
+* **Frontend:** HTML5, CSS3 (Glassmorphism & Adaptive Theme), JavaScript (ES6+ Modules).
+* **Librerie Esterne:**
+    * *Firebase SDK:* Auth & Database.
+    * *Chart.js:* Grafici a radar e linea.
+    * *Driver.js:* Tutorial interattivo.
+    * *FontAwesome:* Icone.
 
 ## 📄 Licenza
 
 Questo progetto è distribuito sotto licenza **MIT**.
-Sei libero di usarlo, modificarlo, distribuirlo e integrarlo nei tuoi progetti, anche commerciali. L'unico obbligo è mantenere l'attribuzione all'autore originale.
+Sei libero di usarlo, modificarlo e distribuirlo mantenendo i crediti all'autore originale.
 
 ---
-*Realizzato con ❤️ per gli studenti che puntano in alto.*
+*Realizzato con ❤️ da Christian Conti per gli studenti che puntano in alto.*
